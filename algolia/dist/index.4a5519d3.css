@@ -1,0 +1,54 @@
+body {
+  padding: 1em;
+  font-family: sans-serif;
+}
+
+.ais-ClearRefinements, .ais-SearchBox {
+  margin: 1em 0;
+}
+
+.ais-Pagination {
+  margin-top: 1em;
+}
+
+.left-panel {
+  float: left;
+  width: 250px;
+}
+
+.right-panel {
+  margin-left: 260px;
+}
+
+.ais-InstantSearch {
+  max-width: 960px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.ais-Hits-item {
+  width: calc(50% - 1rem);
+  margin-bottom: 1em;
+}
+
+.ais-Hits-item img {
+  margin-right: 1em;
+}
+
+.hit-face, .hit-action {
+  margin-bottom: .5em;
+}
+
+.hit-file, .hit-frame, .hit-timestamp {
+  color: #000;
+  margin-bottom: .2em;
+  font-size: 14px;
+}
+
+.hit-filelen, .hit-fps {
+  color: #888;
+  margin-bottom: .2em;
+  font-size: 14px;
+}
+
+/*# sourceMappingURL=index.4a5519d3.css.map */
