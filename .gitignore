@@ -1,5 +1,13 @@
+#media file
 *.mp4
 *.avi
+
+#model file
 *.onnx
 *.pth
+
+#data file
+*.pickle
+
+#build file
 *.pyc
