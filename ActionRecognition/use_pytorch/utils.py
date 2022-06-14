@@ -9,6 +9,6 @@ transform = T.Compose([
 ])
 
 # read the class names from labels.txt -> label을 의미함
-with open('labels.txt', 'r') as f:
+with open('/home/dongheehan/Desktop/workspace/life-logging-system/ActionRecognition/use_pytorch/labels.txt', 'r') as f:
     class_names = f.readlines()
     f.close()

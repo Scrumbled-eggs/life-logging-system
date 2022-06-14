@@ -10,7 +10,7 @@ import pickle
 
 # construct the argument parser
 parser = argparse.ArgumentParser()
-parser.add_argument('-i', '--input', help='path to input video', type=str, default='./input/example_activities.mp4')
+parser.add_argument('-i', '--input', help='path to input video', type=str, default='/home/dongheehan/Desktop/workspace/life-logging-system/ActionRecognition/use_pytorch/input/example_activities.mp4')
 parser.add_argument('-c', '--clip-len', dest='clip_len', default=16, type=int,
                     help='number of frames to consider for each prediction')
 
