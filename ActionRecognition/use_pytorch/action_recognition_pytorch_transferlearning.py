@@ -14,7 +14,7 @@ import cv2
 import itertools
 from tqdm import tqdm
 import numpy as np
-
+import csv
 
 def _find_classes(dir):
     classes = [d.name for d in os.scandir(dir) if d.is_dir()]
@@ -86,13 +86,19 @@ num_ftrs = model.fc.in_features
 model.fc = nn.Linear(num_ftrs, len(labels))
 
 # load the model onto the computation device
+
+device = 'cpu'
+
 model = model.to(device)
 
 
 
-epochs = 100
+epochs = 1
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.AdamW(model.parameters(), lr=0.01)
+
+losses = []
+accs = []
 
 for epoch in range(epochs):
     running_loss = 0
@@ -129,7 +135,22 @@ for epoch in range(epochs):
     batch_bar.close() # You need this to close the tqdm bar
 
     epoch_loss = running_loss / len(loader)
-    epoch_acc = running_corrects.double() / len(loader)
+    epoch_acc = running_corrects.item()
 
     print(f'{epoch} epoch summary Loss: {epoch_loss:.2f} Acc: {epoch_acc:.2f}')
- 
+    losses.append(epoch_loss)
+    accs.append(epoch_acc) 
+
+logs = []
+fields = ['loss', 'correct /300']
+logs.append(losses)
+logs.append(accs)
+
+with open(f'train_log.csv', 'w',newline='') as f: 
+      
+    # using csv.writer method from CSV package 
+    write = csv.writer(f) 
+    
+    for index in range(len(losses)):
+        write.writerow([losses[index], accs[index]]) 
+
