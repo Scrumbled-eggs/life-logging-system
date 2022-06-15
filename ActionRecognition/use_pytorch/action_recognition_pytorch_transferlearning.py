@@ -69,7 +69,7 @@ class VideoDataset(torch.utils.data.Dataset):
         return voutputFrame, target
 
 
-transforms = [t.Resize((128, 171))]
+transforms = [t.Resize((112, 112))]
 frame_transform = t.Compose(transforms)
 
 dataset = VideoDataset("./dataset", frame_transform=frame_transform,)
@@ -77,80 +77,81 @@ dataset = VideoDataset("./dataset", frame_transform=frame_transform,)
 loader = DataLoader(dataset, batch_size=10, shuffle=True)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = 'cpu'
 
 # 0 Fi
 labels = [0, 1]
 # load pretrained model
-model = torchvision.models.video.r3d_18(pretrained=True, progress=True)
-num_ftrs = model.fc.in_features
-model.fc = nn.Linear(num_ftrs, len(labels))
 
-# load the model onto the computation device
+models  = [('r3d_18',torchvision.models.video.r3d_18(pretrained=True, progress=True)),  ('mc3_18',torchvision.models.video.mc3_18(pretrained=True, progress=True))]
 
-device = 'cpu'
+for modelname, model in models:
+    num_ftrs = model.fc.in_features
+    model.fc = nn.Linear(num_ftrs, len(labels))
 
-model = model.to(device)
+    # load the model onto the computation device
+    model = model.to(device)
 
+    epochs = 1
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.AdamW(model.parameters(), lr=0.01)
 
+    losses = []
+    accs = []
 
-epochs = 1
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.AdamW(model.parameters(), lr=0.01)
+    for epoch in range(epochs):
+        running_loss = 0
+        running_corrects = 0
 
-losses = []
-accs = []
+        batch_bar = tqdm(total=len(loader), dynamic_ncols=True, leave=False, position=0, desc='Train') 
+        for batch in loader:
 
-for epoch in range(epochs):
-    running_loss = 0
-    running_corrects = 0
+            voutputFrame, target = batch
+            voutputFrame = voutputFrame.to(device)
+            target = target.to(device)
 
-    batch_bar = tqdm(total=len(loader), dynamic_ncols=True, leave=False, position=0, desc='Train') 
-    for batch in loader:
+                    # zero the parameter gradients
+            optimizer.zero_grad()
+            # forward
 
-        voutputFrame, target = batch
-        voutputFrame = voutputFrame.to(device)
-        target = target.to(device)
+            prediction = model(voutputFrame)
+            _, preds = torch.max(prediction, 1)
+            loss = criterion(prediction, target)
 
-                # zero the parameter gradients
-        optimizer.zero_grad()
-        # forward
+            loss.backward()
+            optimizer.step()
 
-        prediction = model(voutputFrame)
-        _, preds = torch.max(prediction, 1)
-        loss = criterion(prediction, target)
+            running_loss += loss.item()
+            running_corrects += torch.sum(preds == target.data)
 
-        loss.backward()
-        optimizer.step()
+            # tqdm lets you add some details so you can monitor training as you train.
+            batch_bar.set_postfix( 
+                num_correct = f"{running_corrects}", 
+                loss=f"{loss.item():.4f}", 
+                lr=f"{float(optimizer.param_groups[0]['lr']):.4f}")
 
-        running_loss += loss.item()
-        running_corrects += torch.sum(preds == target.data)
+            batch_bar.update() # Update tqdm bar
+        batch_bar.close() # You need this to close the tqdm bar
 
-        # tqdm lets you add some details so you can monitor training as you train.
-        batch_bar.set_postfix( 
-            num_correct = f"{running_corrects}", 
-            loss=f"{loss.item():.4f}", 
-            lr=f"{float(optimizer.param_groups[0]['lr']):.4f}")
+        epoch_loss = running_loss / len(loader)
+        epoch_acc = running_corrects.item()
 
-        batch_bar.update() # Update tqdm bar
-    batch_bar.close() # You need this to close the tqdm bar
+        print(f'{epoch} epoch summary Loss: {epoch_loss:.2f} Acc: {epoch_acc:.2f}')
+        losses.append(epoch_loss)
+        accs.append(epoch_acc) 
 
-    epoch_loss = running_loss / len(loader)
-    epoch_acc = running_corrects.item()
+    logs = []
+    fields = ['loss', 'correct /300']
+    logs.append(losses)
+    logs.append(accs)
 
-    print(f'{epoch} epoch summary Loss: {epoch_loss:.2f} Acc: {epoch_acc:.2f}')
-    losses.append(epoch_loss)
-    accs.append(epoch_acc) 
+    torch.save(model.state_dict(), f'{modelname}.pkl')
 
-logs = []
-fields = ['loss', 'correct /300']
-logs.append(losses)
-logs.append(accs)
-
-with open(f'train_log.csv', 'w',newline='') as f: 
-      
-    # using csv.writer method from CSV package 
-    write = csv.writer(f) 
-    
-    for index in range(len(losses)):
-        write.writerow([losses[index], accs[index]]) 
+    with open(f'{modelname}_train_log.csv', 'w',newline='') as f: 
+        
+        # using csv.writer method from CSV package 
+        write = csv.writer(f) 
+        
+        for index in range(len(losses)):
+            write.writerow([losses[index], accs[index]]) 
 
