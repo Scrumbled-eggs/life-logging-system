@@ -74,11 +74,18 @@ frame_transform = t.Compose(transforms)
 
 dataset = VideoDataset("./dataset", frame_transform=frame_transform,)
 
-loader = DataLoader(dataset, batch_size=10, shuffle=True)
+train_ratio = 0.8
+numberofTraindata = len(dataset) * train_ratio
+train_set, val_set = torch.utils.data.random_split(dataset, [ numberofTraindata, len(dataset) - numberofTraindata])
+
+trainDataLoader = DataLoader(train_set, batch_size=10, shuffle=True)
+validationDataLoader = DataLoader(val_set, batch_size=10, shuffle=True)
+
+validationStep = 5
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 device = 'cpu'
-
+epochs = 1
 # 0 Fi
 labels = [0, 1]
 # load pretrained model
@@ -92,7 +99,7 @@ for modelname, model in models:
     # load the model onto the computation device
     model = model.to(device)
 
-    epochs = 1
+    
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.AdamW(model.parameters(), lr=0.01)
 
@@ -103,8 +110,11 @@ for modelname, model in models:
         running_loss = 0
         running_corrects = 0
 
-        batch_bar = tqdm(total=len(loader), dynamic_ncols=True, leave=False, position=0, desc='Train') 
-        for batch in loader:
+        batch_bar = tqdm(total=len(trainDataLoader), dynamic_ncols=True, leave=False, position=0, desc='Train') 
+
+        model.train()
+
+        for batch in trainDataLoader:
 
             voutputFrame, target = batch
             voutputFrame = voutputFrame.to(device)
@@ -133,19 +143,37 @@ for modelname, model in models:
             batch_bar.update() # Update tqdm bar
         batch_bar.close() # You need this to close the tqdm bar
 
-        epoch_loss = running_loss / len(loader)
-        epoch_acc = running_corrects.item()
+        epoch_loss = running_loss / len(trainDataLoader)
+        epoch_acc = float(running_corrects.item()) / len(trainDataLoader)
 
         print(f'{epoch} epoch summary Loss: {epoch_loss:.2f} Acc: {epoch_acc:.2f}')
         losses.append(epoch_loss)
         accs.append(epoch_acc) 
+
+        if epoch % validationStep == 0:
+            model.eval()
+            validation_corrects = 0
+
+            for batch in validationDataLoader:
+
+                voutputFrame, target = batch
+                voutputFrame = voutputFrame.to(device)
+                target = target.to(device)
+
+
+                prediction = model(voutputFrame)
+                _, preds = torch.max(prediction, 1)
+                validation_corrects += torch.sum(preds == target.data)
+
+            validation_acc = float(validation_corrects.item()) / len(validationDataLoader)
+
+            torch.save(model.state_dict(), f'{modelname}_{validation_acc:.2f}.pkl')
 
     logs = []
     fields = ['loss', 'correct /300']
     logs.append(losses)
     logs.append(accs)
 
-    torch.save(model.state_dict(), f'{modelname}.pkl')
 
     with open(f'{modelname}_train_log.csv', 'w',newline='') as f: 
         
