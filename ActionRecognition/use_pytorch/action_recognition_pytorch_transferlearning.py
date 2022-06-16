@@ -54,7 +54,6 @@ class VideoDataset(torch.utils.data.Dataset):
         
         startFrameNumber = random.randint(0, len(frames) - self.clip_len)
 
-
         #image preprocessing
         if  self.frame_transform != None:
             for index in range(startFrameNumber, startFrameNumber + self.clip_len):
@@ -84,7 +83,7 @@ validationDataLoader = DataLoader(val_set, batch_size=10, shuffle=True)
 validationStep = 5
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-device = 'cpu'
+#device = 'cpu'
 epochs = 1
 # 0 Fi
 labels = [0, 1]
@@ -120,10 +119,10 @@ for modelname, model in models:
             voutputFrame = voutputFrame.to(device)
             target = target.to(device)
 
-                    # zero the parameter gradients
+            # zero the parameter gradients
             optimizer.zero_grad()
+            
             # forward
-
             prediction = model(voutputFrame)
             _, preds = torch.max(prediction, 1)
             loss = criterion(prediction, target)
