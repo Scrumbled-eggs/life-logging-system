@@ -7,6 +7,7 @@ import numpy as np
 import utils
 import torch.nn as nn
 import pickle
+from torchsummary import summary
 
 # construct the argument parser
 parser = argparse.ArgumentParser()

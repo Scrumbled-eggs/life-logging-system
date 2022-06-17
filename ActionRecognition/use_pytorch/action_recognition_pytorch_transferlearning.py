@@ -15,6 +15,7 @@ import itertools
 from tqdm import tqdm
 import numpy as np
 import csv
+from torchsummary import summary
 
 def _find_classes(dir):
     classes = [d.name for d in os.scandir(dir) if d.is_dir()]
@@ -74,17 +75,20 @@ frame_transform = t.Compose(transforms)
 dataset = VideoDataset("./dataset", frame_transform=frame_transform,)
 
 train_ratio = 0.8
-numberofTraindata = len(dataset) * train_ratio
+numberofTraindata = int(len(dataset) * train_ratio)
 train_set, val_set = torch.utils.data.random_split(dataset, [ numberofTraindata, len(dataset) - numberofTraindata])
 
-trainDataLoader = DataLoader(train_set, batch_size=10, shuffle=True)
-validationDataLoader = DataLoader(val_set, batch_size=10, shuffle=True)
+batch_size = 10
+trainDataLoader = DataLoader(train_set, batch_size=batch_size, shuffle=True)
+validationDataLoader = DataLoader(val_set, batch_size=batch_size, shuffle=True)
 
 validationStep = 5
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-#device = 'cpu'
-epochs = 1
+
+device = 'cpu'
+epochs = 200
+
 # 0 Fi
 labels = [0, 1]
 # load pretrained model
@@ -95,10 +99,12 @@ for modelname, model in models:
     num_ftrs = model.fc.in_features
     model.fc = nn.Linear(num_ftrs, len(labels))
 
+    print(f'{modelname} summary')
+    summary(model)
+
     # load the model onto the computation device
     model = model.to(device)
 
-    
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.AdamW(model.parameters(), lr=0.01)
 
@@ -112,7 +118,7 @@ for modelname, model in models:
         batch_bar = tqdm(total=len(trainDataLoader), dynamic_ncols=True, leave=False, position=0, desc='Train') 
 
         model.train()
-
+        
         for batch in trainDataLoader:
 
             voutputFrame, target = batch
@@ -143,9 +149,9 @@ for modelname, model in models:
         batch_bar.close() # You need this to close the tqdm bar
 
         epoch_loss = running_loss / len(trainDataLoader)
-        epoch_acc = float(running_corrects.item()) / len(trainDataLoader)
+        epoch_acc = float(running_corrects.item()) / (len(trainDataLoader) * batch_size)
 
-        print(f'{epoch} epoch summary Loss: {epoch_loss:.2f} Acc: {epoch_acc:.2f}')
+        print(f'{modelname} model {epoch} epoch summary Loss: {epoch_loss:.2f} Acc: {epoch_acc:.2f}')
         losses.append(epoch_loss)
         accs.append(epoch_acc) 
 
@@ -164,7 +170,7 @@ for modelname, model in models:
                 _, preds = torch.max(prediction, 1)
                 validation_corrects += torch.sum(preds == target.data)
 
-            validation_acc = float(validation_corrects.item()) / len(validationDataLoader)
+            validation_acc = float(validation_corrects.item()) / (len(validationDataLoader) * batch_size)
 
             torch.save(model.state_dict(), f'{modelname}_{validation_acc:.2f}.pkl')
 
@@ -172,7 +178,6 @@ for modelname, model in models:
     fields = ['loss', 'correct /300']
     logs.append(losses)
     logs.append(accs)
-
 
     with open(f'{modelname}_train_log.csv', 'w',newline='') as f: 
         
