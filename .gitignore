@@ -11,3 +11,4 @@
 
 #build file
 *.pyc
+node_modules
