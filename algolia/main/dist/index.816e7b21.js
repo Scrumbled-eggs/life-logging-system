@@ -1,7 +1,7 @@
 const { algoliasearch , instantsearch  } = window;
-const searchClient = algoliasearch("0L0TPDZHFM", "1a42927a7a1ffc3661c466e3a7acda87");
+const searchClient = algoliasearch('0L0TPDZHFM', '1a42927a7a1ffc3661c466e3a7acda87');
 const search = instantsearch({
-    indexName: "milestone1",
+    indexName: 'milestone1',
     searchClient
 });
 // Autocomplete 
@@ -18,25 +18,25 @@ search.addWidgets([
 ]);
 search.addWidgets([
     instantsearch.widgets.searchBox({
-        container: "#searchbox",
-        placeholder: "Search here..",
+        container: '#searchbox',
+        placeholder: 'Search here..',
         showSubmit: true
     }),
     instantsearch.widgets.refinementList({
-        container: "#filter-list",
-        attribute: "filelength(s)"
+        container: '#filter-list',
+        attribute: 'filelength(s)'
     }),
     instantsearch.widgets.refinementList({
-        container: "#fps-list",
-        attribute: "fps",
+        container: '#fps-list',
+        attribute: 'fps',
         showMore: true,
-        soryBy: "count:desc"
+        soryBy: 'count:desc'
     }),
     instantsearch.widgets.configure({
         hitsPerPage: 16
     }),
     instantsearch.widgets.hits({
-        container: "#hits",
+        container: '#hits',
         templates: {
             item: `
 <div>
@@ -56,36 +56,36 @@ search.addWidgets([
       <div class="hit-fps">fps:{{fps}}</div>
     </div>
 `,
-            empty: "No result for <q>{{ query }}</q>"
+            empty: 'No result for <q>{{ query }}</q>'
         }
     }),
     instantsearch.widgets.configure({
         facets: [
-            "*"
+            '*'
         ],
         maxValuesPerFacet: 20
     }),
     instantsearch.widgets.pagination({
-        container: "#pagination",
+        container: '#pagination',
         showFirst: true,
         showLast: true
     }), 
 ]);
 //TBD
 instantsearch.widgets.sortBy({
-    container: "#sort-by",
+    container: '#sort-by',
     items: [
         {
-            label: "Featured",
-            value: "instant_search"
+            label: 'Featured',
+            value: 'instant_search'
         },
         {
-            label: "Price (asc)",
-            value: "instant_search_price_asc"
+            label: 'Price (asc)',
+            value: 'instant_search_price_asc'
         },
         {
-            label: "Price (desc)",
-            value: "instant_search_price_desc"
+            label: 'Price (desc)',
+            value: 'instant_search_price_desc'
         }, 
     ]
 });
