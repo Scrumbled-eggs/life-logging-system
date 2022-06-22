@@ -9,6 +9,7 @@
   <link rel="shortcut icon" href="./favicon.png">
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.css@7/themes/algolia-min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@algolia/autocomplete-theme-classic">
   <link rel="stylesheet" href="./src/index.css">
   <link rel="stylesheet" href="./src/app.css">
 
@@ -27,15 +28,18 @@
     </div>
     <div class="right-panel">
       <div id="sort-by"></div>
-      <div id="searchbox"></div>
+      <div id="autocomplete"></div>
       <div id="hits"></div>
       <div id="pagination"></div>
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/algoliasearch@4.10.5/dist/algoliasearch-lite.umd.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/instantsearch.js@4.40.6"></script>
-  <script src="./src/app.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.10.5/dist/algoliasearch-lite.umd.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/instantsearch.js@4.40.6"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/instantsearch.js@4.40.6/es/lib/routers/history"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/instantsearch.js@4.40.6/es/connectors"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@algolia/autocomplete-js"></script>
+  <script type="module" src="./src/app.js"></script>
 </body>
 
 </html>

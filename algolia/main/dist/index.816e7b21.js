@@ -1,27 +1,15 @@
 const { algoliasearch , instantsearch  } = window;
 const searchClient = algoliasearch('0L0TPDZHFM', '1a42927a7a1ffc3661c466e3a7acda87');
+const INSTANT_SEARCH_INDEX_NAME = 'milestone1';
+const instantSearchRouter = historyRouter();
 const search = instantsearch({
-    indexName: 'milestone1',
-    searchClient
+    indexName: INSTANT_SEARCH_INDEX_NAME,
+    searchClient,
+    routing: instantSearchRouter
 });
-// Autocomplete 
-// 1. Create a render function
-const renderAutocomplete = (renderOptions, isFirstRender)=>{
-// Rendering logic
-};
-// 2. Create the custom widget
-const customAutocomplete = instantsearch.connectors.connectAutocomplete(renderAutocomplete);
-// 3. Instantiate
+const virtualSearchBox = connectSearchBox(()=>{});
 search.addWidgets([
-    customAutocomplete({
-    })
-]);
-search.addWidgets([
-    instantsearch.widgets.searchBox({
-        container: '#searchbox',
-        placeholder: 'Search here..',
-        showSubmit: true
-    }),
+    virtualSearchBox({}),
     instantsearch.widgets.refinementList({
         container: '#filter-list',
         attribute: 'filelength(s)'
@@ -90,5 +78,47 @@ instantsearch.widgets.sortBy({
     ]
 });
 search.start();
+// Set the InstantSearch index UI state from external events.
+function setInstantSearchUiState(indexUiState) {
+    search.setUiState((uiState)=>({
+            ...uiState,
+            [INSTANT_SEARCH_INDEX_NAME]: {
+                ...uiState[INSTANT_SEARCH_INDEX_NAME],
+                // We reset the page when the search state changes.
+                page: 1,
+                ...indexUiState
+            }
+        })
+    );
+}
+// Return the InstantSearch index UI state.
+function getInstantSearchUiState() {
+    const uiState = instantSearchRouter.read();
+    return uiState && uiState[INSTANT_SEARCH_INDEX_NAME] || {};
+}
+const searchPageState = getInstantSearchUiState();
+autocomplete({
+    container: '#autocomplete',
+    placeholder: 'Search for products',
+    detachedMediaQuery: 'none',
+    initialState: {
+        query: searchPageState.query || ''
+    },
+    onSubmit ({ state  }) {
+        setInstantSearchUiState({
+            query: state.query
+        });
+    },
+    onReset () {
+        setInstantSearchUiState({
+            query: ''
+        });
+    },
+    onStateChange ({ prevState , state  }) {
+        if (prevState.query !== state.query) setInstantSearchUiState({
+            query: state.query
+        });
+    }
+});
 
 //# sourceMappingURL=index.816e7b21.js.map
