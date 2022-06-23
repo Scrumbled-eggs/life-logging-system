@@ -31,7 +31,6 @@ const search = instantsearch({
 const virtualSearchBox = connectSearchBox(() => {})
 
 search.addWidgets([
-  virtualSearchBox({}),
   refinementList({
     container: '#filter-list',
     attribute: 'filelength(s)',
@@ -39,12 +38,12 @@ search.addWidgets([
   refinementList({
     container: '#fps-list',
     attribute: 'fps',
-    showMore: true,
-    soryBy: 'count:desc',
+    showMore: true
   }),
   configure({
     hitsPerPage: 16
   }),
+  virtualSearchBox({}),
   hits({
     container: '#hits',
     templates: {
@@ -79,6 +78,14 @@ search.addWidgets([
     showLast: true
   }),
 ]);
+
+//TBD
+sortBy({
+  container: '#sort-by',
+  items: [
+    { label: 'Featured', value: 'milestone1' }
+    ],
+});
 
 
 // Set the InstantSearch index UI state from external events.
@@ -217,7 +224,7 @@ autocomplete({
   // Add the recent searches plugin.
   plugins: [recentSearchesPlugin],
   container: '#autocomplete',
-  placeholder: 'Search for video',
+  placeholder: 'Search for video..',
   detachedMediaQuery: 'none',
   initialState: {
     query: searchPageState.query || '',

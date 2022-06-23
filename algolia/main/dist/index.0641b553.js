@@ -548,7 +548,6 @@ const search = _instantsearchJsDefault.default({
 });
 const virtualSearchBox = _connectors.connectSearchBox(()=>{});
 search.addWidgets([
-    virtualSearchBox({}),
     _widgets.refinementList({
         container: '#filter-list',
         attribute: 'filelength(s)'
@@ -556,12 +555,12 @@ search.addWidgets([
     _widgets.refinementList({
         container: '#fps-list',
         attribute: 'fps',
-        showMore: true,
-        soryBy: 'count:desc'
+        showMore: true
     }),
     _widgets.configure({
         hitsPerPage: 16
     }),
+    virtualSearchBox({}),
     _widgets.hits({
         container: '#hits',
         templates: {
@@ -598,6 +597,16 @@ search.addWidgets([
         showLast: true
     }), 
 ]);
+//TBD
+_widgets.sortBy({
+    container: '#sort-by',
+    items: [
+        {
+            label: 'Featured',
+            value: 'milestone1'
+        }
+    ]
+});
 // Set the InstantSearch index UI state from external events.
 function setInstantSearchUiState(indexUiState) {
     search.setUiState((uiState)=>({
@@ -712,7 +721,7 @@ _autocompleteJs.autocomplete({
         recentSearchesPlugin
     ],
     container: '#autocomplete',
-    placeholder: 'Search for video',
+    placeholder: 'Search for video..',
     detachedMediaQuery: 'none',
     initialState: {
         query: searchPageState.query || ''
@@ -734,7 +743,7 @@ _autocompleteJs.autocomplete({
     }
 });
 
-},{"@algolia/autocomplete-js":"3Syxs","instantsearch.js":"5B89y","instantsearch.js/es/connectors":"fWJNO","instantsearch.js/es/lib/routers/history":"haLSt","instantsearch.js/es/widgets":"bk5Jd","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","algoliasearch/lite":"ehDkI","@algolia/autocomplete-theme-classic":"1MBAZ","@algolia/autocomplete-plugin-recent-searches":"lFtzN"}],"3Syxs":[function(require,module,exports) {
+},{"@algolia/autocomplete-js":"3Syxs","instantsearch.js":"5B89y","instantsearch.js/es/connectors":"fWJNO","instantsearch.js/es/lib/routers/history":"haLSt","instantsearch.js/es/widgets":"bk5Jd","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","algoliasearch/lite":"ehDkI","@algolia/autocomplete-plugin-recent-searches":"lFtzN","@algolia/autocomplete-theme-classic":"1MBAZ"}],"3Syxs":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _autocomplete = require("./autocomplete");
@@ -19913,7 +19922,7 @@ function w(n, t17) {
     return H.version = "4.9.1", H;
 });
 
-},{}],"1MBAZ":[function() {},{}],"lFtzN":[function(require,module,exports) {
+},{}],"lFtzN":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _addHighlightedAttribute = require("./addHighlightedAttribute");
@@ -20432,6 +20441,6 @@ function search(_ref) {
     });
 }
 
-},{"./addHighlightedAttribute":"iMgYs","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["jKwHT","bNKaB"], "bNKaB", "parcelRequire89ec")
+},{"./addHighlightedAttribute":"iMgYs","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"1MBAZ":[function() {},{}]},["jKwHT","bNKaB"], "bNKaB", "parcelRequire89ec")
 
 //# sourceMappingURL=index.0641b553.js.map
