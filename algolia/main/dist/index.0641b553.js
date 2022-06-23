@@ -533,8 +533,12 @@ var _instantsearchJsDefault = parcelHelpers.interopDefault(_instantsearchJs);
 var _connectors = require("instantsearch.js/es/connectors");
 var _history = require("instantsearch.js/es/lib/routers/history");
 var _historyDefault = parcelHelpers.interopDefault(_history);
+var _lite = require("algoliasearch/lite");
+var _liteDefault = parcelHelpers.interopDefault(_lite);
 var _widgets = require("instantsearch.js/es/widgets");
-const searchClient = algoliasearch('0L0TPDZHFM', '1a42927a7a1ffc3661c466e3a7acda87');
+var _autocompletePluginRecentSearches = require("@algolia/autocomplete-plugin-recent-searches");
+var _autocompleteThemeClassic = require("@algolia/autocomplete-theme-classic");
+const searchClient = _liteDefault.default('0L0TPDZHFM', '1a42927a7a1ffc3661c466e3a7acda87');
 const INSTANT_SEARCH_INDEX_NAME = 'milestone1';
 const instantSearchRouter = _historyDefault.default();
 const search = _instantsearchJsDefault.default({
@@ -594,25 +598,6 @@ search.addWidgets([
         showLast: true
     }), 
 ]);
-//TBD
-_widgets.sortBy({
-    container: '#sort-by',
-    items: [
-        {
-            label: 'Featured',
-            value: 'instant_search'
-        },
-        {
-            label: 'Price (asc)',
-            value: 'instant_search_price_asc'
-        },
-        {
-            label: 'Price (desc)',
-            value: 'instant_search_price_desc'
-        }, 
-    ]
-});
-search.start();
 // Set the InstantSearch index UI state from external events.
 function setInstantSearchUiState(indexUiState) {
     search.setUiState((uiState)=>({
@@ -626,15 +611,108 @@ function setInstantSearchUiState(indexUiState) {
         })
     );
 }
+function debounce(fn, time) {
+    let timerId = undefined;
+    return function(...args) {
+        if (timerId) clearTimeout(timerId);
+        timerId = setTimeout(()=>fn(...args)
+        , time);
+    };
+}
+const debouncedSetInstantSearchUiState = debounce(setInstantSearchUiState, 500);
+const searchPageState = getInstantSearchUiState();
+// Build URLs that InstantSearch understands.
+function getInstantSearchUrl(indexUiState) {
+    return search.createURL({
+        [INSTANT_SEARCH_INDEX_NAME]: indexUiState
+    });
+}
 // Return the InstantSearch index UI state.
 function getInstantSearchUiState() {
     const uiState = instantSearchRouter.read();
     return uiState && uiState[INSTANT_SEARCH_INDEX_NAME] || {};
 }
-const searchPageState = getInstantSearchUiState();
+search.start();
+// Detect when an event is modified with a special key to let the browser
+// trigger its default behavior.
+function isModifierEvent(event) {
+    const isMiddleClick = event.button === 1;
+    return isMiddleClick || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey;
+}
+function onSelect({ setIsOpen , setQuery , event , query  }) {
+    // You want to trigger the default browser behavior if the event is modified.
+    if (isModifierEvent(event)) return;
+    setQuery(query);
+    setIsOpen(false);
+    setInstantSearchUiState({
+        query
+    });
+}
+function getItemUrl({ query  }) {
+    return getInstantSearchUrl({
+        query
+    });
+}
+function createItemWrapperTemplate({ children , query , html  }) {
+    const uiState = {
+        query
+    };
+    return html`<a
+    class="aa-ItemLink"
+    href="${getInstantSearchUrl(uiState)}"
+    onClick="${(event)=>{
+        if (!isModifierEvent(event)) // Bypass the original link behavior if there's no event modifier
+        // to set the InstantSearch UI state without reloading the page.
+        event.preventDefault();
+    }}"
+  >
+    ${children}
+  </a>`;
+}
+const recentSearchesPlugin = _autocompletePluginRecentSearches.createLocalStorageRecentSearchesPlugin({
+    key: 'instantsearch',
+    limit: 3,
+    transformSource ({ source  }) {
+        return {
+            ...source,
+            getItemUrl ({ item  }) {
+                return getItemUrl({
+                    query: item.label
+                });
+            },
+            onSelect ({ setIsOpen , setQuery , item , event  }) {
+                onSelect({
+                    setQuery,
+                    setIsOpen,
+                    event,
+                    query: item.label
+                });
+            },
+            // Update the default `item` template to wrap it with a link
+            // and plug it to the InstantSearch router.
+            templates: {
+                ...source.templates,
+                item (params) {
+                    const { children  } = source.templates.item(params).props;
+                    return createItemWrapperTemplate({
+                        query: params.item.label,
+                        children,
+                        html: params.html
+                    });
+                }
+            }
+        };
+    }
+});
 _autocompleteJs.autocomplete({
+    // You want recent searches to appear with an empty query.
+    openOnFocus: true,
+    // Add the recent searches plugin.
+    plugins: [
+        recentSearchesPlugin
+    ],
     container: '#autocomplete',
-    placeholder: 'Search for products',
+    placeholder: 'Search for video',
     detachedMediaQuery: 'none',
     initialState: {
         query: searchPageState.query || ''
@@ -656,7 +734,7 @@ _autocompleteJs.autocomplete({
     }
 });
 
-},{"@algolia/autocomplete-js":"3Syxs","instantsearch.js":"5B89y","instantsearch.js/es/connectors":"fWJNO","instantsearch.js/es/lib/routers/history":"haLSt","instantsearch.js/es/widgets":"bk5Jd","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3Syxs":[function(require,module,exports) {
+},{"@algolia/autocomplete-js":"3Syxs","instantsearch.js":"5B89y","instantsearch.js/es/connectors":"fWJNO","instantsearch.js/es/lib/routers/history":"haLSt","instantsearch.js/es/widgets":"bk5Jd","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","algoliasearch/lite":"ehDkI","@algolia/autocomplete-theme-classic":"1MBAZ","@algolia/autocomplete-plugin-recent-searches":"lFtzN"}],"3Syxs":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _autocomplete = require("./autocomplete");
@@ -19106,6 +19184,1254 @@ function w(n, t17) {
     return "function" == typeof t17 ? t17(n) : t17;
 }
 
-},{"preact":"26zcy","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["jKwHT","bNKaB"], "bNKaB", "parcelRequire89ec")
+},{"preact":"26zcy","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"ehDkI":[function(require,module,exports) {
+/*! algoliasearch-lite.umd.js | 4.9.1 | © Algolia, inc. | https://github.com/algolia/algoliasearch-client-javascript */ !function(e, t) {
+    module.exports = t();
+}(this, function() {
+    "use strict";
+    function e1(e, t, r) {
+        return t in e ? Object.defineProperty(e, t, {
+            value: r,
+            enumerable: !0,
+            configurable: !0,
+            writable: !0
+        }) : e[t] = r, e;
+    }
+    function t1(e, t2) {
+        var r = Object.keys(e);
+        if (Object.getOwnPropertySymbols) {
+            var n = Object.getOwnPropertySymbols(e);
+            t2 && (n = n.filter(function(t) {
+                return Object.getOwnPropertyDescriptor(e, t).enumerable;
+            })), r.push.apply(r, n);
+        }
+        return r;
+    }
+    function r1(r) {
+        for(var n = 1; n < arguments.length; n++){
+            var o = null != arguments[n] ? arguments[n] : {};
+            n % 2 ? t1(Object(o), !0).forEach(function(t) {
+                e1(r, t, o[t]);
+            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(r, Object.getOwnPropertyDescriptors(o)) : t1(Object(o)).forEach(function(e) {
+                Object.defineProperty(r, e, Object.getOwnPropertyDescriptor(o, e));
+            });
+        }
+        return r;
+    }
+    function n1(e2, t3) {
+        if (null == e2) return {};
+        var r2, n2, o2 = function(e, t) {
+            if (null == e) return {};
+            var r, n, o = {}, a = Object.keys(e);
+            for(n = 0; n < a.length; n++)r = a[n], t.indexOf(r) >= 0 || (o[r] = e[r]);
+            return o;
+        }(e2, t3);
+        if (Object.getOwnPropertySymbols) {
+            var a2 = Object.getOwnPropertySymbols(e2);
+            for(n2 = 0; n2 < a2.length; n2++)r2 = a2[n2], t3.indexOf(r2) >= 0 || Object.prototype.propertyIsEnumerable.call(e2, r2) && (o2[r2] = e2[r2]);
+        }
+        return o2;
+    }
+    function o1(e3, t4) {
+        return function(e) {
+            if (Array.isArray(e)) return e;
+        }(e3) || function(e, t) {
+            if (!(Symbol.iterator in Object(e) || "[object Arguments]" === Object.prototype.toString.call(e))) return;
+            var r = [], n = !0, o = !1, a = void 0;
+            try {
+                for(var u, i = e[Symbol.iterator](); !(n = (u = i.next()).done) && (r.push(u.value), !t || r.length !== t); n = !0);
+            } catch (e4) {
+                o = !0, a = e4;
+            } finally{
+                try {
+                    n || null == i.return || i.return();
+                } finally{
+                    if (o) throw a;
+                }
+            }
+            return r;
+        }(e3, t4) || function() {
+            throw new TypeError("Invalid attempt to destructure non-iterable instance");
+        }();
+    }
+    function a1(e5) {
+        return function(e) {
+            if (Array.isArray(e)) {
+                for(var t = 0, r = new Array(e.length); t < e.length; t++)r[t] = e[t];
+                return r;
+            }
+        }(e5) || function(e) {
+            if (Symbol.iterator in Object(e) || "[object Arguments]" === Object.prototype.toString.call(e)) return Array.from(e);
+        }(e5) || function() {
+            throw new TypeError("Invalid attempt to spread non-iterable instance");
+        }();
+    }
+    function u1(e6) {
+        var t5, r3 = "algoliasearch-client-js-".concat(e6.key), n3 = function() {
+            return void 0 === t5 && (t5 = e6.localStorage || window.localStorage), t5;
+        }, a3 = function() {
+            return JSON.parse(n3().getItem(r3) || "{}");
+        };
+        return {
+            get: function(e7, t6) {
+                var r4 = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {
+                    miss: function() {
+                        return Promise.resolve();
+                    }
+                };
+                return Promise.resolve().then(function() {
+                    var r = JSON.stringify(e7), n = a3()[r];
+                    return Promise.all([
+                        n || t6(),
+                        void 0 !== n
+                    ]);
+                }).then(function(e) {
+                    var t = o1(e, 2), n = t[0], a = t[1];
+                    return Promise.all([
+                        n,
+                        a || r4.miss(n)
+                    ]);
+                }).then(function(e) {
+                    return o1(e, 1)[0];
+                });
+            },
+            set: function(e, t) {
+                return Promise.resolve().then(function() {
+                    var o = a3();
+                    return o[JSON.stringify(e)] = t, n3().setItem(r3, JSON.stringify(o)), t;
+                });
+            },
+            delete: function(e) {
+                return Promise.resolve().then(function() {
+                    var t = a3();
+                    delete t[JSON.stringify(e)], n3().setItem(r3, JSON.stringify(t));
+                });
+            },
+            clear: function() {
+                return Promise.resolve().then(function() {
+                    n3().removeItem(r3);
+                });
+            }
+        };
+    }
+    function i1(e8) {
+        var t7 = a1(e8.caches), r5 = t7.shift();
+        return void 0 === r5 ? {
+            get: function(e9, t) {
+                var r = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {
+                    miss: function() {
+                        return Promise.resolve();
+                    }
+                }, n = t();
+                return n.then(function(e) {
+                    return Promise.all([
+                        e,
+                        r.miss(e)
+                    ]);
+                }).then(function(e) {
+                    return o1(e, 1)[0];
+                });
+            },
+            set: function(e, t) {
+                return Promise.resolve(t);
+            },
+            delete: function(e) {
+                return Promise.resolve();
+            },
+            clear: function() {
+                return Promise.resolve();
+            }
+        } : {
+            get: function(e, n) {
+                var o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {
+                    miss: function() {
+                        return Promise.resolve();
+                    }
+                };
+                return r5.get(e, n, o).catch(function() {
+                    return i1({
+                        caches: t7
+                    }).get(e, n, o);
+                });
+            },
+            set: function(e, n) {
+                return r5.set(e, n).catch(function() {
+                    return i1({
+                        caches: t7
+                    }).set(e, n);
+                });
+            },
+            delete: function(e) {
+                return r5.delete(e).catch(function() {
+                    return i1({
+                        caches: t7
+                    }).delete(e);
+                });
+            },
+            clear: function() {
+                return r5.clear().catch(function() {
+                    return i1({
+                        caches: t7
+                    }).clear();
+                });
+            }
+        };
+    }
+    function s1() {
+        var e10 = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {
+            serializable: !0
+        }, t = {};
+        return {
+            get: function(r, n) {
+                var o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {
+                    miss: function() {
+                        return Promise.resolve();
+                    }
+                }, a = JSON.stringify(r);
+                if (a in t) return Promise.resolve(e10.serializable ? JSON.parse(t[a]) : t[a]);
+                var u = n(), i = o && o.miss || function() {
+                    return Promise.resolve();
+                };
+                return u.then(function(e) {
+                    return i(e);
+                }).then(function() {
+                    return u;
+                });
+            },
+            set: function(r, n) {
+                return t[JSON.stringify(r)] = e10.serializable ? JSON.stringify(n) : n, Promise.resolve(n);
+            },
+            delete: function(e) {
+                return delete t[JSON.stringify(e)], Promise.resolve();
+            },
+            clear: function() {
+                return t = {}, Promise.resolve();
+            }
+        };
+    }
+    function c1(e) {
+        for(var t = e.length - 1; t > 0; t--){
+            var r = Math.floor(Math.random() * (t + 1)), n = e[t];
+            e[t] = e[r], e[r] = n;
+        }
+        return e;
+    }
+    function l1(e, t) {
+        return t ? (Object.keys(t).forEach(function(r) {
+            e[r] = t[r](e);
+        }), e) : e;
+    }
+    function f1(e) {
+        for(var t = arguments.length, r = new Array(t > 1 ? t - 1 : 0), n = 1; n < t; n++)r[n - 1] = arguments[n];
+        var o = 0;
+        return e.replace(/%s/g, function() {
+            return encodeURIComponent(r[o++]);
+        });
+    }
+    var h1 = {
+        WithinQueryParameters: 0,
+        WithinHeaders: 1
+    };
+    function d1(e11, t) {
+        var r = e11 || {}, n = r.data || {};
+        return Object.keys(r).forEach(function(e) {
+            -1 === [
+                "timeout",
+                "headers",
+                "queryParameters",
+                "data",
+                "cacheable"
+            ].indexOf(e) && (n[e] = r[e]);
+        }), {
+            data: Object.entries(n).length > 0 ? n : void 0,
+            timeout: r.timeout || t,
+            headers: r.headers || {},
+            queryParameters: r.queryParameters || {},
+            cacheable: r.cacheable
+        };
+    }
+    var m1 = {
+        Read: 1,
+        Write: 2,
+        Any: 3
+    }, p1 = 1, v = 2, y = 3;
+    function g(e) {
+        var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : p1;
+        return r1(r1({}, e), {}, {
+            status: t,
+            lastUpdate: Date.now()
+        });
+    }
+    function b(e) {
+        return "string" == typeof e ? {
+            protocol: "https",
+            url: e,
+            accept: m1.Any
+        } : {
+            protocol: e.protocol || "https",
+            url: e.url,
+            accept: e.accept || m1.Any
+        };
+    }
+    var O = "GET", P = "POST";
+    function q(e12, t8) {
+        return Promise.all(t8.map(function(t) {
+            return e12.get(t, function() {
+                return Promise.resolve(g(t));
+            });
+        })).then(function(e13) {
+            var r = e13.filter(function(e14) {
+                return function(e) {
+                    return e.status === p1 || Date.now() - e.lastUpdate > 12e4;
+                }(e14);
+            }), n = e13.filter(function(e15) {
+                return function(e) {
+                    return e.status === y && Date.now() - e.lastUpdate <= 12e4;
+                }(e15);
+            }), o = [].concat(a1(r), a1(n));
+            return {
+                getTimeout: function(e, t) {
+                    return (0 === n.length && 0 === e ? 1 : n.length + 3 + e) * t;
+                },
+                statelessHosts: o.length > 0 ? o.map(function(e) {
+                    return b(e);
+                }) : t8
+            };
+        });
+    }
+    function j(e16, t9, n4, o3) {
+        var u = [], i = function(e, t) {
+            if (e.method === O || void 0 === e.data && void 0 === t.data) return;
+            var n = Array.isArray(e.data) ? e.data : r1(r1({}, e.data), t.data);
+            return JSON.stringify(n);
+        }(n4, o3), s = function(e17, t10) {
+            var n = r1(r1({}, e17.headers), t10.headers), o = {};
+            return Object.keys(n).forEach(function(e) {
+                var t = n[e];
+                o[e.toLowerCase()] = t;
+            }), o;
+        }(e16, o3), c = n4.method, l2 = n4.method !== O ? {} : r1(r1({}, n4.data), o3.data), f = r1(r1(r1({
+            "x-algolia-agent": e16.userAgent.value
+        }, e16.queryParameters), l2), o3.queryParameters), h = 0, d2 = function t11(r6, a) {
+            var l = r6.pop();
+            if (void 0 === l) throw {
+                name: "RetryError",
+                message: "Unreachable hosts - your application id may be incorrect. If the error persists, contact support@algolia.com.",
+                transporterStackTrace: A(u)
+            };
+            var d = {
+                data: i,
+                headers: s,
+                method: c,
+                url: S(l, n4.path, f),
+                connectTimeout: a(h, e16.timeouts.connect),
+                responseTimeout: a(h, o3.timeout)
+            }, m = function(e) {
+                var t = {
+                    request: d,
+                    response: e,
+                    host: l,
+                    triesLeft: r6.length
+                };
+                return u.push(t), t;
+            }, p = {
+                onSuccess: function(e18) {
+                    return function(e19) {
+                        try {
+                            return JSON.parse(e19.content);
+                        } catch (t12) {
+                            throw function(e, t) {
+                                return {
+                                    name: "DeserializationError",
+                                    message: e,
+                                    response: t
+                                };
+                            }(t12.message, e19);
+                        }
+                    }(e18);
+                },
+                onRetry: function(n) {
+                    var o = m(n);
+                    return n.isTimedOut && h++, Promise.all([
+                        e16.logger.info("Retryable failure", x(o)),
+                        e16.hostsCache.set(l, g(l, n.isTimedOut ? y : v))
+                    ]).then(function() {
+                        return t11(r6, a);
+                    });
+                },
+                onFail: function(e20) {
+                    throw m(e20), function(e22, t13) {
+                        var r7 = e22.content, n = e22.status, o = r7;
+                        try {
+                            o = JSON.parse(r7).message;
+                        } catch (e21) {}
+                        return function(e, t, r) {
+                            return {
+                                name: "ApiError",
+                                message: e,
+                                status: t,
+                                transporterStackTrace: r
+                            };
+                        }(o, n, t13);
+                    }(e20, A(u));
+                }
+            };
+            return e16.requester.send(d).then(function(e23) {
+                return function(e24, t14) {
+                    return function(e25) {
+                        var t15 = e25.status;
+                        return e25.isTimedOut || function(e) {
+                            var t = e.isTimedOut, r = e.status;
+                            return !t && 0 == ~~r;
+                        }(e25) || 2 != ~~(t15 / 100) && 4 != ~~(t15 / 100);
+                    }(e24) ? t14.onRetry(e24) : 2 == ~~(e24.status / 100) ? t14.onSuccess(e24) : t14.onFail(e24);
+                }(e23, p);
+            });
+        };
+        return q(e16.hostsCache, t9).then(function(e) {
+            return d2(a1(e.statelessHosts).reverse(), e.getTimeout);
+        });
+    }
+    function w(e26) {
+        var t = {
+            value: "Algolia for JavaScript (".concat(e26, ")"),
+            add: function(e) {
+                var r = "; ".concat(e.segment).concat(void 0 !== e.version ? " (".concat(e.version, ")") : "");
+                return -1 === t.value.indexOf(r) && (t.value = "".concat(t.value).concat(r)), t;
+            }
+        };
+        return t;
+    }
+    function S(e, t, r) {
+        var n = T(r), o = "".concat(e.protocol, "://").concat(e.url, "/").concat("/" === t.charAt(0) ? t.substr(1) : t);
+        return n.length && (o += "?".concat(n)), o;
+    }
+    function T(e) {
+        return Object.keys(e).map(function(t) {
+            var r;
+            return f1("%s=%s", t, (r = e[t], "[object Object]" === Object.prototype.toString.call(r) || "[object Array]" === Object.prototype.toString.call(r) ? JSON.stringify(e[t]) : e[t]));
+        }).join("&");
+    }
+    function A(e27) {
+        return e27.map(function(e) {
+            return x(e);
+        });
+    }
+    function x(e) {
+        var t = e.request.headers["x-algolia-api-key"] ? {
+            "x-algolia-api-key": "*****"
+        } : {};
+        return r1(r1({}, e), {}, {
+            request: r1(r1({}, e.request), {}, {
+                headers: r1(r1({}, e.request.headers), t)
+            })
+        });
+    }
+    var N = function(e28) {
+        var t16 = e28.appId, n5 = function(e, t, r) {
+            var n = {
+                "x-algolia-api-key": r,
+                "x-algolia-application-id": t
+            };
+            return {
+                headers: function() {
+                    return e === h1.WithinHeaders ? n : {};
+                },
+                queryParameters: function() {
+                    return e === h1.WithinQueryParameters ? n : {};
+                }
+            };
+        }(void 0 !== e28.authMode ? e28.authMode : h1.WithinHeaders, t16, e28.apiKey), a4 = function(e29) {
+            var t17 = e29.hostsCache, r8 = e29.logger, n6 = e29.requester, a5 = e29.requestsCache, u = e29.responsesCache, i = e29.timeouts, s = e29.userAgent, c = e29.hosts, l = e29.queryParameters, f = {
+                hostsCache: t17,
+                logger: r8,
+                requester: n6,
+                requestsCache: a5,
+                responsesCache: u,
+                timeouts: i,
+                userAgent: s,
+                headers: e29.headers,
+                queryParameters: l,
+                hosts: c.map(function(e) {
+                    return b(e);
+                }),
+                read: function(e30, t18) {
+                    var r = d1(t18, f.timeouts.read), n = function() {
+                        return j(f, f.hosts.filter(function(e) {
+                            return 0 != (e.accept & m1.Read);
+                        }), e30, r);
+                    };
+                    if (!0 !== (void 0 !== r.cacheable ? r.cacheable : e30.cacheable)) return n();
+                    var a = {
+                        request: e30,
+                        mappedRequestOptions: r,
+                        transporter: {
+                            queryParameters: f.queryParameters,
+                            headers: f.headers
+                        }
+                    };
+                    return f.responsesCache.get(a, function() {
+                        return f.requestsCache.get(a, function() {
+                            return f.requestsCache.set(a, n()).then(function(e) {
+                                return Promise.all([
+                                    f.requestsCache.delete(a),
+                                    e
+                                ]);
+                            }, function(e) {
+                                return Promise.all([
+                                    f.requestsCache.delete(a),
+                                    Promise.reject(e)
+                                ]);
+                            }).then(function(e) {
+                                var t = o1(e, 2);
+                                t[0];
+                                return t[1];
+                            });
+                        });
+                    }, {
+                        miss: function(e) {
+                            return f.responsesCache.set(a, e);
+                        }
+                    });
+                },
+                write: function(e31, t) {
+                    return j(f, f.hosts.filter(function(e) {
+                        return 0 != (e.accept & m1.Write);
+                    }), e31, d1(t, f.timeouts.write));
+                }
+            };
+            return f;
+        }(r1(r1({
+            hosts: [
+                {
+                    url: "".concat(t16, "-dsn.algolia.net"),
+                    accept: m1.Read
+                },
+                {
+                    url: "".concat(t16, ".algolia.net"),
+                    accept: m1.Write
+                }
+            ].concat(c1([
+                {
+                    url: "".concat(t16, "-1.algolianet.com")
+                },
+                {
+                    url: "".concat(t16, "-2.algolianet.com")
+                },
+                {
+                    url: "".concat(t16, "-3.algolianet.com")
+                }
+            ]))
+        }, e28), {}, {
+            headers: r1(r1(r1({}, n5.headers()), {
+                "content-type": "application/x-www-form-urlencoded"
+            }), e28.headers),
+            queryParameters: r1(r1({}, n5.queryParameters()), e28.queryParameters)
+        }));
+        return l1({
+            transporter: a4,
+            appId: t16,
+            addAlgoliaAgent: function(e, t) {
+                a4.userAgent.add({
+                    segment: e,
+                    version: t
+                });
+            },
+            clearCache: function() {
+                return Promise.all([
+                    a4.requestsCache.clear(),
+                    a4.responsesCache.clear()
+                ]).then(function() {});
+            }
+        }, e28.methods);
+    }, C = function(e) {
+        return function(t) {
+            var r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}, n = {
+                transporter: e.transporter,
+                appId: e.appId,
+                indexName: t
+            };
+            return l1(n, r.methods);
+        };
+    }, k = function(e32) {
+        return function(t, n) {
+            var o = t.map(function(e) {
+                return r1(r1({}, e), {}, {
+                    params: T(e.params || {})
+                });
+            });
+            return e32.transporter.read({
+                method: P,
+                path: "1/indexes/*/queries",
+                data: {
+                    requests: o
+                },
+                cacheable: !0
+            }, n);
+        };
+    }, J = function(e) {
+        return function(t19, o) {
+            return Promise.all(t19.map(function(t) {
+                var a = t.params, u = a.facetName, i = a.facetQuery, s = n1(a, [
+                    "facetName",
+                    "facetQuery"
+                ]);
+                return C(e)(t.indexName, {
+                    methods: {
+                        searchForFacetValues: F
+                    }
+                }).searchForFacetValues(u, i, r1(r1({}, o), s));
+            }));
+        };
+    }, E = function(e) {
+        return function(t, r, n) {
+            return e.transporter.read({
+                method: P,
+                path: f1("1/answers/%s/prediction", e.indexName),
+                data: {
+                    query: t,
+                    queryLanguages: r
+                },
+                cacheable: !0
+            }, n);
+        };
+    }, I = function(e) {
+        return function(t, r) {
+            return e.transporter.read({
+                method: P,
+                path: f1("1/indexes/%s/query", e.indexName),
+                data: {
+                    query: t
+                },
+                cacheable: !0
+            }, r);
+        };
+    }, F = function(e) {
+        return function(t, r, n) {
+            return e.transporter.read({
+                method: P,
+                path: f1("1/indexes/%s/facets/%s/query", e.indexName, t),
+                data: {
+                    facetQuery: r
+                },
+                cacheable: !0
+            }, n);
+        };
+    }, R = 1, D = 2, W = 3;
+    function H(e33, t20, n7) {
+        var o4, a6 = {
+            appId: e33,
+            apiKey: t20,
+            timeouts: {
+                connect: 1,
+                read: 2,
+                write: 30
+            },
+            requester: {
+                send: function(e34) {
+                    return new Promise(function(t21) {
+                        var r = new XMLHttpRequest;
+                        r.open(e34.method, e34.url, !0), Object.keys(e34.headers).forEach(function(t) {
+                            return r.setRequestHeader(t, e34.headers[t]);
+                        });
+                        var n8, o = function(e, n) {
+                            return setTimeout(function() {
+                                r.abort(), t21({
+                                    status: 0,
+                                    content: n,
+                                    isTimedOut: !0
+                                });
+                            }, 1e3 * e);
+                        }, a = o(e34.connectTimeout, "Connection timeout");
+                        r.onreadystatechange = function() {
+                            r.readyState > r.OPENED && void 0 === n8 && (clearTimeout(a), n8 = o(e34.responseTimeout, "Socket timeout"));
+                        }, r.onerror = function() {
+                            0 === r.status && (clearTimeout(a), clearTimeout(n8), t21({
+                                content: r.responseText || "Network request failed",
+                                status: r.status,
+                                isTimedOut: !1
+                            }));
+                        }, r.onload = function() {
+                            clearTimeout(a), clearTimeout(n8), t21({
+                                content: r.responseText,
+                                status: r.status,
+                                isTimedOut: !1
+                            });
+                        }, r.send(e34.data);
+                    });
+                }
+            },
+            logger: (o4 = W, {
+                debug: function(e, t) {
+                    return R >= o4 && console.debug(e, t), Promise.resolve();
+                },
+                info: function(e, t) {
+                    return D >= o4 && console.info(e, t), Promise.resolve();
+                },
+                error: function(e, t) {
+                    return console.error(e, t), Promise.resolve();
+                }
+            }),
+            responsesCache: s1(),
+            requestsCache: s1({
+                serializable: !1
+            }),
+            hostsCache: i1({
+                caches: [
+                    u1({
+                        key: "".concat("4.9.1", "-").concat(e33)
+                    }),
+                    s1()
+                ]
+            }),
+            userAgent: w("4.9.1").add({
+                segment: "Browser",
+                version: "lite"
+            }),
+            authMode: h1.WithinQueryParameters
+        };
+        return N(r1(r1(r1({}, a6), n7), {}, {
+            methods: {
+                search: k,
+                searchForFacetValues: J,
+                multipleQueries: k,
+                multipleSearchForFacetValues: J,
+                initIndex: function(e) {
+                    return function(t) {
+                        return C(e)(t, {
+                            methods: {
+                                search: I,
+                                searchForFacetValues: F,
+                                findAnswers: E
+                            }
+                        });
+                    };
+                }
+            }
+        }));
+    }
+    return H.version = "4.9.1", H;
+});
+
+},{}],"1MBAZ":[function() {},{}],"lFtzN":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _addHighlightedAttribute = require("./addHighlightedAttribute");
+parcelHelpers.exportAll(_addHighlightedAttribute, exports);
+var _createLocalStorageRecentSearchesPlugin = require("./createLocalStorageRecentSearchesPlugin");
+parcelHelpers.exportAll(_createLocalStorageRecentSearchesPlugin, exports);
+var _createRecentSearchesPlugin = require("./createRecentSearchesPlugin");
+parcelHelpers.exportAll(_createRecentSearchesPlugin, exports);
+var _getTemplates = require("./getTemplates");
+parcelHelpers.exportAll(_getTemplates, exports);
+var _search = require("./search");
+parcelHelpers.exportAll(_search, exports);
+
+},{"./addHighlightedAttribute":"iMgYs","./createLocalStorageRecentSearchesPlugin":"gT3kG","./createRecentSearchesPlugin":"2L1S7","./getTemplates":"8XaSk","./search":"CzUZD","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"iMgYs":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "addHighlightedAttribute", ()=>addHighlightedAttribute
+);
+function ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+    if (Object.getOwnPropertySymbols) {
+        var symbols = Object.getOwnPropertySymbols(object);
+        enumerableOnly && (symbols = symbols.filter(function(sym) {
+            return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+        })), keys.push.apply(keys, symbols);
+    }
+    return keys;
+}
+function _objectSpread(target) {
+    for(var i = 1; i < arguments.length; i++){
+        var source = null != arguments[i] ? arguments[i] : {};
+        i % 2 ? ownKeys(Object(source), !0).forEach(function(key) {
+            _defineProperty(target, key, source[key]);
+        }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function(key) {
+            Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
+    }
+    return target;
+}
+function _defineProperty(obj, key, value) {
+    if (key in obj) Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+    });
+    else obj[key] = value;
+    return obj;
+}
+function addHighlightedAttribute(_ref) {
+    var item = _ref.item, query = _ref.query;
+    return _objectSpread(_objectSpread({}, item), {}, {
+        _highlightResult: {
+            label: {
+                value: query ? item.label.replace(new RegExp(query.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'), 'gi'), function(match) {
+                    return "__aa-highlight__".concat(match, "__/aa-highlight__");
+                }) : item.label
+            }
+        }
+    });
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gT3kG":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "createLocalStorageRecentSearchesPlugin", ()=>createLocalStorageRecentSearchesPlugin
+);
+var _constants = require("./constants");
+var _createLocalStorage = require("./createLocalStorage");
+var _createRecentSearchesPlugin = require("./createRecentSearchesPlugin");
+var _search = require("./search");
+function ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+    if (Object.getOwnPropertySymbols) {
+        var symbols = Object.getOwnPropertySymbols(object);
+        enumerableOnly && (symbols = symbols.filter(function(sym) {
+            return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+        })), keys.push.apply(keys, symbols);
+    }
+    return keys;
+}
+function _objectSpread(target) {
+    for(var i = 1; i < arguments.length; i++){
+        var source = null != arguments[i] ? arguments[i] : {};
+        i % 2 ? ownKeys(Object(source), !0).forEach(function(key) {
+            _defineProperty(target, key, source[key]);
+        }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function(key) {
+            Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
+    }
+    return target;
+}
+function _defineProperty(obj, key, value) {
+    if (key in obj) Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+    });
+    else obj[key] = value;
+    return obj;
+}
+function createLocalStorageRecentSearchesPlugin(options) {
+    var _getOptions = getOptions(options), key = _getOptions.key, limit = _getOptions.limit, transformSource = _getOptions.transformSource, search = _getOptions.search, subscribe = _getOptions.subscribe;
+    var storage = _createLocalStorage.createLocalStorage({
+        key: [
+            _constants.LOCAL_STORAGE_KEY,
+            key
+        ].join(':'),
+        limit: limit,
+        search: search
+    });
+    var recentSearchesPlugin = _createRecentSearchesPlugin.createRecentSearchesPlugin({
+        transformSource: transformSource,
+        storage: storage,
+        subscribe: subscribe
+    });
+    return _objectSpread(_objectSpread({}, recentSearchesPlugin), {}, {
+        name: 'aa.localStorageRecentSearchesPlugin',
+        __autocomplete_pluginOptions: options
+    });
+}
+function getOptions(options) {
+    return _objectSpread({
+        limit: 5,
+        search: _search.search,
+        transformSource: function transformSource(_ref) {
+            var source = _ref.source;
+            return source;
+        }
+    }, options);
+}
+
+},{"./constants":"7gwd9","./createLocalStorage":"iPAw2","./createRecentSearchesPlugin":"2L1S7","./search":"CzUZD","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"7gwd9":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "LOCAL_STORAGE_KEY", ()=>LOCAL_STORAGE_KEY
+);
+parcelHelpers.export(exports, "LOCAL_STORAGE_KEY_TEST", ()=>LOCAL_STORAGE_KEY_TEST
+);
+var LOCAL_STORAGE_KEY = 'AUTOCOMPLETE_RECENT_SEARCHES';
+var LOCAL_STORAGE_KEY_TEST = '__AUTOCOMPLETE_RECENT_SEARCHES_PLUGIN_TEST_KEY__';
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"iPAw2":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "createLocalStorage", ()=>createLocalStorage
+);
+var _getLocalStorage = require("./getLocalStorage");
+function _toConsumableArray(arr) {
+    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
+}
+function _nonIterableSpread() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+}
+function _iterableToArray(iter) {
+    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
+}
+function _arrayWithoutHoles(arr) {
+    if (Array.isArray(arr)) return _arrayLikeToArray(arr);
+}
+function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+    for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
+    return arr2;
+}
+function createLocalStorage(_ref) {
+    var key = _ref.key, limit = _ref.limit, search = _ref.search;
+    var storage = _getLocalStorage.getLocalStorage({
+        key: key
+    });
+    return {
+        onAdd: function onAdd(item) {
+            storage.setItem([
+                item
+            ].concat(_toConsumableArray(storage.getItem())));
+        },
+        onRemove: function onRemove(id) {
+            storage.setItem(storage.getItem().filter(function(x) {
+                return x.id !== id;
+            }));
+        },
+        getAll: function getAll() {
+            var query = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+            return search({
+                query: query,
+                items: storage.getItem(),
+                limit: limit
+            }).slice(0, limit);
+        }
+    };
+}
+
+},{"./getLocalStorage":"fSk8j","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fSk8j":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "getLocalStorage", ()=>getLocalStorage
+);
+var _constants = require("./constants");
+function isLocalStorageSupported() {
+    try {
+        localStorage.setItem(_constants.LOCAL_STORAGE_KEY_TEST, '');
+        localStorage.removeItem(_constants.LOCAL_STORAGE_KEY_TEST);
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+function getLocalStorage(_ref) {
+    var key = _ref.key;
+    if (!isLocalStorageSupported()) return {
+        setItem: function setItem() {},
+        getItem: function getItem() {
+            return [];
+        }
+    };
+    return {
+        setItem: function setItem(items) {
+            return window.localStorage.setItem(key, JSON.stringify(items));
+        },
+        getItem: function getItem() {
+            var items = window.localStorage.getItem(key);
+            return items ? JSON.parse(items) : [];
+        }
+    };
+}
+
+},{"./constants":"7gwd9","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"2L1S7":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "createRecentSearchesPlugin", ()=>createRecentSearchesPlugin
+);
+var _autocompleteShared = require("@algolia/autocomplete-shared");
+var _createStorageApi = require("./createStorageApi");
+var _getTemplates = require("./getTemplates");
+function _toConsumableArray(arr) {
+    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
+}
+function _nonIterableSpread() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+}
+function _iterableToArray(iter) {
+    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
+}
+function _arrayWithoutHoles(arr) {
+    if (Array.isArray(arr)) return _arrayLikeToArray(arr);
+}
+function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+    for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
+    return arr2;
+}
+function ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+    if (Object.getOwnPropertySymbols) {
+        var symbols = Object.getOwnPropertySymbols(object);
+        enumerableOnly && (symbols = symbols.filter(function(sym) {
+            return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+        })), keys.push.apply(keys, symbols);
+    }
+    return keys;
+}
+function _objectSpread(target) {
+    for(var i = 1; i < arguments.length; i++){
+        var source = null != arguments[i] ? arguments[i] : {};
+        i % 2 ? ownKeys(Object(source), !0).forEach(function(key) {
+            _defineProperty(target, key, source[key]);
+        }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function(key) {
+            Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
+    }
+    return target;
+}
+function _defineProperty(obj, key, value) {
+    if (key in obj) Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+    });
+    else obj[key] = value;
+    return obj;
+}
+function getDefaultSubcribe(store) {
+    return function subscribe(_ref) {
+        var onSelect = _ref.onSelect;
+        onSelect(function(_ref2) {
+            var item = _ref2.item, state = _ref2.state, source = _ref2.source;
+            var inputValue = source.getItemInputValue({
+                item: item,
+                state: state
+            });
+            if (source.sourceId === 'querySuggestionsPlugin' && inputValue) {
+                var recentItem = {
+                    id: inputValue,
+                    label: inputValue,
+                    category: item.__autocomplete_qsCategory
+                };
+                store.addItem(recentItem);
+            }
+        });
+    };
+}
+function createRecentSearchesPlugin(options) {
+    var _getOptions = getOptions(options), storage = _getOptions.storage, transformSource = _getOptions.transformSource, subscribe = _getOptions.subscribe;
+    var store = _createStorageApi.createStorageApi(storage);
+    var lastItemsRef = _autocompleteShared.createRef([]);
+    return {
+        name: 'aa.recentSearchesPlugin',
+        subscribe: subscribe !== null && subscribe !== void 0 ? subscribe : getDefaultSubcribe(store),
+        onSubmit: function onSubmit(_ref3) {
+            var state = _ref3.state;
+            var query = state.query;
+            if (query) {
+                var recentItem = {
+                    id: query,
+                    label: query
+                };
+                store.addItem(recentItem);
+            }
+        },
+        getSources: function getSources(_ref4) {
+            var query = _ref4.query, setQuery = _ref4.setQuery, refresh = _ref4.refresh, state = _ref4.state;
+            lastItemsRef.current = store.getAll(query);
+            function onRemove(id) {
+                store.removeItem(id);
+                refresh();
+            }
+            function onTapAhead(item) {
+                setQuery(item.label);
+                refresh();
+            }
+            return Promise.resolve(lastItemsRef.current).then(function(items) {
+                if (items.length === 0) return [];
+                return [
+                    transformSource({
+                        source: {
+                            sourceId: 'recentSearchesPlugin',
+                            getItemInputValue: function getItemInputValue(_ref5) {
+                                var item = _ref5.item;
+                                return item.label;
+                            },
+                            getItems: function getItems() {
+                                return items;
+                            },
+                            templates: _getTemplates.getTemplates({
+                                onRemove: onRemove,
+                                onTapAhead: onTapAhead
+                            })
+                        },
+                        onRemove: onRemove,
+                        onTapAhead: onTapAhead,
+                        state: state
+                    })
+                ];
+            });
+        },
+        data: _objectSpread(_objectSpread({}, store), {}, {
+            // @ts-ignore SearchOptions `facetFilters` is ReadonlyArray
+            getAlgoliaSearchParams: function getAlgoliaSearchParams() {
+                var _params$facetFilters, _params$hitsPerPage;
+                var params = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+                // If the items returned by `store.getAll` are contained in a Promise,
+                // we cannot provide the search params in time when this function is called
+                // because we need to resolve the promise before getting the value.
+                if (!Array.isArray(lastItemsRef.current)) {
+                    _autocompleteShared.warn(false, 'The `getAlgoliaSearchParams` function is not supported with storages that return promises in `getAll`.');
+                    return params;
+                }
+                return _objectSpread(_objectSpread({}, params), {}, {
+                    facetFilters: [].concat(_toConsumableArray((_params$facetFilters = params.facetFilters) !== null && _params$facetFilters !== void 0 ? _params$facetFilters : []), _toConsumableArray(lastItemsRef.current.map(function(item) {
+                        return [
+                            "objectID:-".concat(item.label)
+                        ];
+                    }))),
+                    hitsPerPage: Math.max(1, ((_params$hitsPerPage = params.hitsPerPage) !== null && _params$hitsPerPage !== void 0 ? _params$hitsPerPage : 10) - lastItemsRef.current.length)
+                });
+            }
+        }),
+        __autocomplete_pluginOptions: options
+    };
+}
+function getOptions(options) {
+    return _objectSpread({
+        transformSource: function transformSource(_ref6) {
+            var source = _ref6.source;
+            return source;
+        }
+    }, options);
+}
+
+},{"@algolia/autocomplete-shared":"59T59","./createStorageApi":"gg2wy","./getTemplates":"8XaSk","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gg2wy":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "createStorageApi", ()=>createStorageApi
+);
+function createStorageApi(storage) {
+    return {
+        addItem: function addItem(item) {
+            storage.onRemove(item.id);
+            storage.onAdd(item);
+        },
+        removeItem: function removeItem(id) {
+            storage.onRemove(id);
+        },
+        getAll: function getAll(query) {
+            return storage.getAll(query);
+        }
+    };
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8XaSk":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+/** @jsx createElement */ parcelHelpers.export(exports, "getTemplates", ()=>getTemplates
+);
+function getTemplates(_ref) {
+    var onRemove = _ref.onRemove, onTapAhead = _ref.onTapAhead;
+    return {
+        item: function item(_ref2) {
+            var item = _ref2.item, createElement = _ref2.createElement, components = _ref2.components;
+            return createElement("div", {
+                className: "aa-ItemWrapper"
+            }, createElement("div", {
+                className: "aa-ItemContent"
+            }, createElement("div", {
+                className: "aa-ItemIcon aa-ItemIcon--noBorder"
+            }, createElement("svg", {
+                viewBox: "0 0 24 24",
+                fill: "currentColor"
+            }, createElement("path", {
+                d: "M12.516 6.984v5.25l4.5 2.672-0.75 1.266-5.25-3.188v-6h1.5zM12 20.016q3.281 0 5.648-2.367t2.367-5.648-2.367-5.648-5.648-2.367-5.648 2.367-2.367 5.648 2.367 5.648 5.648 2.367zM12 2.016q4.125 0 7.055 2.93t2.93 7.055-2.93 7.055-7.055 2.93-7.055-2.93-2.93-7.055 2.93-7.055 7.055-2.93z"
+            }))), createElement("div", {
+                className: "aa-ItemContentBody"
+            }, createElement("div", {
+                className: "aa-ItemContentTitle"
+            }, createElement(components.ReverseHighlight, {
+                hit: item,
+                attribute: "label"
+            }), item.category && createElement("span", {
+                className: "aa-ItemContentSubtitle aa-ItemContentSubtitle--inline"
+            }, createElement("span", {
+                className: "aa-ItemContentSubtitleIcon"
+            }), " in", ' ', createElement("span", {
+                className: "aa-ItemContentSubtitleCategory"
+            }, item.category))))), createElement("div", {
+                className: "aa-ItemActions"
+            }, createElement("button", {
+                className: "aa-ItemActionButton",
+                title: "Remove this search",
+                onClick: function onClick(event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    onRemove(item.id);
+                }
+            }, createElement("svg", {
+                viewBox: "0 0 24 24",
+                fill: "currentColor"
+            }, createElement("path", {
+                d: "M18 7v13c0 0.276-0.111 0.525-0.293 0.707s-0.431 0.293-0.707 0.293h-10c-0.276 0-0.525-0.111-0.707-0.293s-0.293-0.431-0.293-0.707v-13zM17 5v-1c0-0.828-0.337-1.58-0.879-2.121s-1.293-0.879-2.121-0.879h-4c-0.828 0-1.58 0.337-2.121 0.879s-0.879 1.293-0.879 2.121v1h-4c-0.552 0-1 0.448-1 1s0.448 1 1 1h1v13c0 0.828 0.337 1.58 0.879 2.121s1.293 0.879 2.121 0.879h10c0.828 0 1.58-0.337 2.121-0.879s0.879-1.293 0.879-2.121v-13h1c0.552 0 1-0.448 1-1s-0.448-1-1-1zM9 5v-1c0-0.276 0.111-0.525 0.293-0.707s0.431-0.293 0.707-0.293h4c0.276 0 0.525 0.111 0.707 0.293s0.293 0.431 0.293 0.707v1zM9 11v6c0 0.552 0.448 1 1 1s1-0.448 1-1v-6c0-0.552-0.448-1-1-1s-1 0.448-1 1zM13 11v6c0 0.552 0.448 1 1 1s1-0.448 1-1v-6c0-0.552-0.448-1-1-1s-1 0.448-1 1z"
+            }))), createElement("button", {
+                className: "aa-ItemActionButton",
+                title: "Fill query with \"".concat(item.label, "\""),
+                onClick: function onClick(event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    onTapAhead(item);
+                }
+            }, createElement("svg", {
+                viewBox: "0 0 24 24",
+                fill: "currentColor"
+            }, createElement("path", {
+                d: "M8 17v-7.586l8.293 8.293c0.391 0.391 1.024 0.391 1.414 0s0.391-1.024 0-1.414l-8.293-8.293h7.586c0.552 0 1-0.448 1-1s-0.448-1-1-1h-10c-0.552 0-1 0.448-1 1v10c0 0.552 0.448 1 1 1s1-0.448 1-1z"
+            })))));
+        }
+    };
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"CzUZD":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "search", ()=>search
+);
+var _addHighlightedAttribute = require("./addHighlightedAttribute");
+function search(_ref) {
+    var query = _ref.query, items = _ref.items, limit = _ref.limit;
+    if (!query) return items.slice(0, limit).map(function(item) {
+        return _addHighlightedAttribute.addHighlightedAttribute({
+            item: item,
+            query: query
+        });
+    });
+    return items.filter(function(item) {
+        return item.label.toLowerCase().includes(query.toLowerCase());
+    }).slice(0, limit).map(function(item) {
+        return _addHighlightedAttribute.addHighlightedAttribute({
+            item: item,
+            query: query
+        });
+    });
+}
+
+},{"./addHighlightedAttribute":"iMgYs","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["jKwHT","bNKaB"], "bNKaB", "parcelRequire89ec")
 
 //# sourceMappingURL=index.0641b553.js.map

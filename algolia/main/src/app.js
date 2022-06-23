@@ -2,6 +2,7 @@ import { autocomplete } from '@algolia/autocomplete-js';
 import instantsearch from 'instantsearch.js';
 import { connectSearchBox } from 'instantsearch.js/es/connectors';
 import historyRouter from 'instantsearch.js/es/lib/routers/history';
+import algoliasearch from 'algoliasearch/lite';
 import {
   configure,
   refinementList,
@@ -9,6 +10,9 @@ import {
   pagination,
   sortBy,
 } from 'instantsearch.js/es/widgets';
+import { createLocalStorageRecentSearchesPlugin } from '@algolia/autocomplete-plugin-recent-searches';
+
+import '@algolia/autocomplete-theme-classic'
 
 const searchClient = algoliasearch(
   '0L0TPDZHFM',
@@ -76,18 +80,6 @@ search.addWidgets([
   }),
 ]);
 
-//TBD
-sortBy({
-  container: '#sort-by',
-  items: [
-    { label: 'Featured', value: 'instant_search' },
-    { label: 'Price (asc)', value: 'instant_search_price_asc' },
-    { label: 'Price (desc)', value: 'instant_search_price_desc' },
-  ],
-});
-
-
-search.start();
 
 // Set the InstantSearch index UI state from external events.
 function setInstantSearchUiState(indexUiState) {
@@ -102,6 +94,28 @@ function setInstantSearchUiState(indexUiState) {
   }))
 }
 
+function debounce(fn, time) {
+  let timerId = undefined
+
+  return function(...args) {
+    if (timerId) {
+      clearTimeout(timerId)
+    }
+
+    timerId = setTimeout(() => fn(...args), time)
+  }
+}
+
+const debouncedSetInstantSearchUiState = debounce(setInstantSearchUiState, 500)
+
+
+const searchPageState = getInstantSearchUiState()
+
+// Build URLs that InstantSearch understands.
+function getInstantSearchUrl(indexUiState) {
+  return search.createURL({ [INSTANT_SEARCH_INDEX_NAME]: indexUiState });
+}
+
 // Return the InstantSearch index UI state.
 function getInstantSearchUiState() {
   const uiState = instantSearchRouter.read()
@@ -109,11 +123,101 @@ function getInstantSearchUiState() {
   return (uiState && uiState[INSTANT_SEARCH_INDEX_NAME]) || {}
 }
 
-const searchPageState = getInstantSearchUiState()
+search.start();
+
+
+// Detect when an event is modified with a special key to let the browser
+// trigger its default behavior.
+function isModifierEvent(event) {
+  const isMiddleClick = event.button === 1;
+
+  return (
+    isMiddleClick ||
+    event.altKey ||
+    event.ctrlKey ||
+    event.metaKey ||
+    event.shiftKey
+  );
+}
+
+function onSelect({ setIsOpen, setQuery, event, query }) {
+  // You want to trigger the default browser behavior if the event is modified.
+  if (isModifierEvent(event)) {
+    return;
+  }
+
+  setQuery(query);
+  setIsOpen(false);
+  setInstantSearchUiState({ query });
+}
+
+function getItemUrl({ query }) {
+  return getInstantSearchUrl({ query });
+}
+
+function createItemWrapperTemplate({ children, query, html }) {
+  const uiState = { query };
+
+  return html`<a
+    class="aa-ItemLink"
+    href="${getInstantSearchUrl(uiState)}"
+    onClick="${(event) => {
+      if (!isModifierEvent(event)) {
+        // Bypass the original link behavior if there's no event modifier
+        // to set the InstantSearch UI state without reloading the page.
+        event.preventDefault();
+      }
+    }}"
+  >
+    ${children}
+  </a>`;
+}
+
+const recentSearchesPlugin = createLocalStorageRecentSearchesPlugin({
+  key: 'instantsearch',
+  limit: 3,
+  transformSource({ source }) {
+    return {
+      ...source,
+      getItemUrl({ item }) {
+        return getItemUrl({
+          query: item.label,
+        });
+      },
+      onSelect({ setIsOpen, setQuery, item, event }) {
+        onSelect({
+          setQuery,
+          setIsOpen,
+          event,
+          query: item.label,
+        });
+      },
+      // Update the default `item` template to wrap it with a link
+      // and plug it to the InstantSearch router.
+      templates: {
+        ...source.templates,
+        item(params) {
+          const { children } = source.templates.item(params).props;
+
+          return createItemWrapperTemplate({
+            query: params.item.label,
+            children,
+            html: params.html,
+          });
+        },
+      },
+    };
+  },
+});
+
 
 autocomplete({
+  // You want recent searches to appear with an empty query.
+  openOnFocus: true,
+  // Add the recent searches plugin.
+  plugins: [recentSearchesPlugin],
   container: '#autocomplete',
-  placeholder: 'Search for products',
+  placeholder: 'Search for video',
   detachedMediaQuery: 'none',
   initialState: {
     query: searchPageState.query || '',
