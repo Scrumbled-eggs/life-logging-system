@@ -1,8 +1,12 @@
-import { autocomplete } from '@algolia/autocomplete-js';
 import instantsearch from 'instantsearch.js';
+import algoliasearch from 'algoliasearch/lite';
+import { autocomplete } from '@algolia/autocomplete-js';
 import { connectSearchBox } from 'instantsearch.js/es/connectors';
 import historyRouter from 'instantsearch.js/es/lib/routers/history';
-import algoliasearch from 'algoliasearch/lite';
+import { createQuerySuggestionsPlugin } from '@algolia/autocomplete-plugin-query-suggestions';
+import { createLocalStorageRecentSearchesPlugin } from '@algolia/autocomplete-plugin-recent-searches';
+import { h, Fragment } from 'preact';
+
 import {
   configure,
   refinementList,
@@ -10,7 +14,6 @@ import {
   pagination,
   sortBy,
 } from 'instantsearch.js/es/widgets';
-import { createLocalStorageRecentSearchesPlugin } from '@algolia/autocomplete-plugin-recent-searches';
 
 import '@algolia/autocomplete-theme-classic'
 
@@ -182,7 +185,7 @@ function createItemWrapperTemplate({ children, query, html }) {
 
 const recentSearchesPlugin = createLocalStorageRecentSearchesPlugin({
   key: 'instantsearch',
-  limit: 3,
+  limit: 5,
   transformSource({ source }) {
     return {
       ...source,
@@ -217,12 +220,59 @@ const recentSearchesPlugin = createLocalStorageRecentSearchesPlugin({
   },
 });
 
+const querySuggestionsPlugin = createQuerySuggestionsPlugin({
+  searchClient,
+  indexName: 'milestone1_query_suggestions3',
+  getSearchParams({ state }) {
+    return { hitsPerPage: state.query ? 5 : 10};
+    // This creates a shared `hitsPerPage` value once the duplicates
+    // between recent searches and Query Suggestions are removed.
+    // return recentSearchesPlugin.data.getAlgoliaSearchParams({
+    //  hitsPerPage: 6,
+    // });
+  },
+  transformSource({ source }) {
+    return {
+      ...source,
+      sourceId: 'querySuggestionsPlugin',
+      getItemUrl({ item }) {
+        return getItemUrl({
+          query: item.query,
+        });
+      },
+      onSelect({ setIsOpen, setQuery, event, item }) {
+        onSelect({
+          setQuery,
+          setIsOpen,
+          event,
+          query: item.query,
+        });
+      },
+      getItems(params) {
+        return source.getItems(params);
+      },
+      templates: {
+        ...source.templates,
+        item(params) {
+          const { children } = source.templates.item(params).props;
+
+          return createItemWrapperTemplate({
+            query: params.item.label,
+            children,
+            html: params.html,
+          });
+        },
+      },
+    };
+  },
+});
+
 
 autocomplete({
   // You want recent searches to appear with an empty query.
   openOnFocus: true,
-  // Add the recent searches plugin.
-  plugins: [recentSearchesPlugin],
+  // Add the recent searches and Query Suggestions plugins.
+  plugins: [recentSearchesPlugin, querySuggestionsPlugin],
   container: '#autocomplete',
   placeholder: 'Search for video..',
   detachedMediaQuery: 'none',

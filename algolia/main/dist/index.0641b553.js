@@ -527,16 +527,18 @@ function hmrAcceptRun(bundle, id) {
 
 },{}],"bNKaB":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-var _autocompleteJs = require("@algolia/autocomplete-js");
 var _instantsearchJs = require("instantsearch.js");
 var _instantsearchJsDefault = parcelHelpers.interopDefault(_instantsearchJs);
+var _lite = require("algoliasearch/lite");
+var _liteDefault = parcelHelpers.interopDefault(_lite);
+var _autocompleteJs = require("@algolia/autocomplete-js");
 var _connectors = require("instantsearch.js/es/connectors");
 var _history = require("instantsearch.js/es/lib/routers/history");
 var _historyDefault = parcelHelpers.interopDefault(_history);
-var _lite = require("algoliasearch/lite");
-var _liteDefault = parcelHelpers.interopDefault(_lite);
-var _widgets = require("instantsearch.js/es/widgets");
+var _autocompletePluginQuerySuggestions = require("@algolia/autocomplete-plugin-query-suggestions");
 var _autocompletePluginRecentSearches = require("@algolia/autocomplete-plugin-recent-searches");
+var _preact = require("preact");
+var _widgets = require("instantsearch.js/es/widgets");
 var _autocompleteThemeClassic = require("@algolia/autocomplete-theme-classic");
 const searchClient = _liteDefault.default('0L0TPDZHFM', '1a42927a7a1ffc3661c466e3a7acda87');
 const INSTANT_SEARCH_INDEX_NAME = 'milestone1';
@@ -680,7 +682,7 @@ function createItemWrapperTemplate({ children , query , html  }) {
 }
 const recentSearchesPlugin = _autocompletePluginRecentSearches.createLocalStorageRecentSearchesPlugin({
     key: 'instantsearch',
-    limit: 3,
+    limit: 5,
     transformSource ({ source  }) {
         return {
             ...source,
@@ -713,12 +715,60 @@ const recentSearchesPlugin = _autocompletePluginRecentSearches.createLocalStorag
         };
     }
 });
+const querySuggestionsPlugin = _autocompletePluginQuerySuggestions.createQuerySuggestionsPlugin({
+    searchClient,
+    indexName: 'milestone1_query_suggestions3',
+    getSearchParams ({ state  }) {
+        return {
+            hitsPerPage: state.query ? 5 : 10
+        };
+    // This creates a shared `hitsPerPage` value once the duplicates
+    // between recent searches and Query Suggestions are removed.
+    // return recentSearchesPlugin.data.getAlgoliaSearchParams({
+    //  hitsPerPage: 6,
+    // });
+    },
+    transformSource ({ source  }) {
+        return {
+            ...source,
+            sourceId: 'querySuggestionsPlugin',
+            getItemUrl ({ item  }) {
+                return getItemUrl({
+                    query: item.query
+                });
+            },
+            onSelect ({ setIsOpen , setQuery , event , item  }) {
+                onSelect({
+                    setQuery,
+                    setIsOpen,
+                    event,
+                    query: item.query
+                });
+            },
+            getItems (params) {
+                return source.getItems(params);
+            },
+            templates: {
+                ...source.templates,
+                item (params) {
+                    const { children  } = source.templates.item(params).props;
+                    return createItemWrapperTemplate({
+                        query: params.item.label,
+                        children,
+                        html: params.html
+                    });
+                }
+            }
+        };
+    }
+});
 _autocompleteJs.autocomplete({
     // You want recent searches to appear with an empty query.
     openOnFocus: true,
-    // Add the recent searches plugin.
+    // Add the recent searches and Query Suggestions plugins.
     plugins: [
-        recentSearchesPlugin
+        recentSearchesPlugin,
+        querySuggestionsPlugin
     ],
     container: '#autocomplete',
     placeholder: 'Search for video..',
@@ -743,7 +793,7 @@ _autocompleteJs.autocomplete({
     }
 });
 
-},{"@algolia/autocomplete-js":"3Syxs","instantsearch.js":"5B89y","instantsearch.js/es/connectors":"fWJNO","instantsearch.js/es/lib/routers/history":"haLSt","instantsearch.js/es/widgets":"bk5Jd","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","algoliasearch/lite":"ehDkI","@algolia/autocomplete-plugin-recent-searches":"lFtzN","@algolia/autocomplete-theme-classic":"1MBAZ"}],"3Syxs":[function(require,module,exports) {
+},{"@algolia/autocomplete-js":"3Syxs","instantsearch.js":"5B89y","instantsearch.js/es/connectors":"fWJNO","instantsearch.js/es/lib/routers/history":"haLSt","instantsearch.js/es/widgets":"bk5Jd","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","algoliasearch/lite":"ehDkI","@algolia/autocomplete-plugin-recent-searches":"lFtzN","@algolia/autocomplete-theme-classic":"1MBAZ","@algolia/autocomplete-plugin-query-suggestions":"kDyli","preact":"26zcy"}],"3Syxs":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _autocomplete = require("./autocomplete");
@@ -20441,6 +20491,264 @@ function search(_ref) {
     });
 }
 
-},{"./addHighlightedAttribute":"iMgYs","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"1MBAZ":[function() {},{}]},["jKwHT","bNKaB"], "bNKaB", "parcelRequire89ec")
+},{"./addHighlightedAttribute":"iMgYs","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"1MBAZ":[function() {},{}],"kDyli":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _createQuerySuggestionsPlugin = require("./createQuerySuggestionsPlugin");
+parcelHelpers.exportAll(_createQuerySuggestionsPlugin, exports);
+var _getTemplates = require("./getTemplates");
+parcelHelpers.exportAll(_getTemplates, exports);
+
+},{"./createQuerySuggestionsPlugin":"7BBqc","./getTemplates":"9IWzT","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"7BBqc":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "createQuerySuggestionsPlugin", ()=>createQuerySuggestionsPlugin
+);
+var _autocompleteJs = require("@algolia/autocomplete-js");
+var _autocompleteShared = require("@algolia/autocomplete-shared");
+var _getTemplates = require("./getTemplates");
+function ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+    if (Object.getOwnPropertySymbols) {
+        var symbols = Object.getOwnPropertySymbols(object);
+        enumerableOnly && (symbols = symbols.filter(function(sym) {
+            return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+        })), keys.push.apply(keys, symbols);
+    }
+    return keys;
+}
+function _objectSpread(target) {
+    for(var i = 1; i < arguments.length; i++){
+        var source = null != arguments[i] ? arguments[i] : {};
+        i % 2 ? ownKeys(Object(source), !0).forEach(function(key) {
+            _defineProperty(target, key, source[key]);
+        }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function(key) {
+            Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
+    }
+    return target;
+}
+function _defineProperty(obj, key, value) {
+    if (key in obj) Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+    });
+    else obj[key] = value;
+    return obj;
+}
+function _createForOfIteratorHelper(o, allowArrayLike) {
+    var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"];
+    if (!it) {
+        if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") {
+            if (it) o = it;
+            var i = 0;
+            var F = function F() {};
+            return {
+                s: F,
+                n: function n() {
+                    if (i >= o.length) return {
+                        done: true
+                    };
+                    return {
+                        done: false,
+                        value: o[i++]
+                    };
+                },
+                e: function e(_e) {
+                    throw _e;
+                },
+                f: F
+            };
+        }
+        throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+    }
+    var normalCompletion = true, didErr = false, err;
+    return {
+        s: function s() {
+            it = it.call(o);
+        },
+        n: function n() {
+            var step = it.next();
+            normalCompletion = step.done;
+            return step;
+        },
+        e: function e(_e2) {
+            didErr = true;
+            err = _e2;
+        },
+        f: function f() {
+            try {
+                if (!normalCompletion && it.return != null) it.return();
+            } finally{
+                if (didErr) throw err;
+            }
+        }
+    };
+}
+function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+}
+function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+    for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
+    return arr2;
+}
+function createQuerySuggestionsPlugin(options) {
+    var _getOptions = getOptions(options), searchClient = _getOptions.searchClient, indexName = _getOptions.indexName, getSearchParams = _getOptions.getSearchParams, transformSource = _getOptions.transformSource, categoryAttribute = _getOptions.categoryAttribute, itemsWithCategories = _getOptions.itemsWithCategories, categoriesPerItem = _getOptions.categoriesPerItem;
+    return {
+        name: 'aa.querySuggestionsPlugin',
+        getSources: function getSources(_ref) {
+            var query = _ref.query, setQuery = _ref.setQuery, refresh = _ref.refresh, state = _ref.state;
+            function onTapAhead(item) {
+                setQuery("".concat(item.query, " "));
+                refresh();
+            }
+            return [
+                transformSource({
+                    source: {
+                        sourceId: 'querySuggestionsPlugin',
+                        getItemInputValue: function getItemInputValue(_ref2) {
+                            var item = _ref2.item;
+                            return item.query;
+                        },
+                        getItems: function getItems() {
+                            return _autocompleteJs.getAlgoliaResults({
+                                searchClient: searchClient,
+                                queries: [
+                                    {
+                                        indexName: indexName,
+                                        query: query,
+                                        params: getSearchParams({
+                                            state: state
+                                        })
+                                    }
+                                ],
+                                transformResponse: function transformResponse(_ref3) {
+                                    var hits = _ref3.hits;
+                                    var querySuggestionsHits = hits[0];
+                                    if (!query || !categoryAttribute) return querySuggestionsHits;
+                                    return querySuggestionsHits.reduce(function(acc, current, i) {
+                                        var items = [
+                                            current
+                                        ];
+                                        if (i <= itemsWithCategories - 1) {
+                                            var categories = _autocompleteShared.getAttributeValueByPath(current, Array.isArray(categoryAttribute) ? categoryAttribute : [
+                                                categoryAttribute
+                                            ]).map(function(x) {
+                                                return x.value;
+                                            }).slice(0, categoriesPerItem);
+                                            var _iterator = _createForOfIteratorHelper(categories), _step;
+                                            try {
+                                                for(_iterator.s(); !(_step = _iterator.n()).done;){
+                                                    var category = _step.value;
+                                                    items.push(_objectSpread({
+                                                        __autocomplete_qsCategory: category
+                                                    }, current));
+                                                }
+                                            } catch (err) {
+                                                _iterator.e(err);
+                                            } finally{
+                                                _iterator.f();
+                                            }
+                                        }
+                                        acc.push.apply(acc, items);
+                                        return acc;
+                                    }, []);
+                                }
+                            });
+                        },
+                        templates: _getTemplates.getTemplates({
+                            onTapAhead: onTapAhead
+                        })
+                    },
+                    onTapAhead: onTapAhead,
+                    state: state
+                })
+            ];
+        },
+        __autocomplete_pluginOptions: options
+    };
+}
+function getOptions(options) {
+    return _objectSpread({
+        getSearchParams: function getSearchParams() {
+            return {};
+        },
+        transformSource: function transformSource(_ref4) {
+            var source = _ref4.source;
+            return source;
+        },
+        itemsWithCategories: 1,
+        categoriesPerItem: 1
+    }, options);
+}
+
+},{"@algolia/autocomplete-js":"3Syxs","@algolia/autocomplete-shared":"59T59","./getTemplates":"9IWzT","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"9IWzT":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+/** @jsx createElement */ parcelHelpers.export(exports, "getTemplates", ()=>getTemplates
+);
+function getTemplates(_ref) {
+    var onTapAhead = _ref.onTapAhead;
+    return {
+        item: function item(_ref2) {
+            var item = _ref2.item, createElement = _ref2.createElement, components = _ref2.components;
+            if (item.__autocomplete_qsCategory) return createElement("div", {
+                className: "aa-ItemWrapper"
+            }, createElement("div", {
+                className: "aa-ItemContent aa-ItemContent--indented"
+            }, createElement("div", {
+                className: "aa-ItemContentSubtitle aa-ItemContentSubtitle--standalone"
+            }, createElement("span", {
+                className: "aa-ItemContentSubtitleIcon"
+            }), createElement("span", null, "in", ' ', createElement("span", {
+                className: "aa-ItemContentSubtitleCategory"
+            }, item.__autocomplete_qsCategory)))));
+            return createElement("div", {
+                className: "aa-ItemWrapper"
+            }, createElement("div", {
+                className: "aa-ItemContent"
+            }, createElement("div", {
+                className: "aa-ItemIcon aa-ItemIcon--noBorder"
+            }, createElement("svg", {
+                viewBox: "0 0 24 24",
+                fill: "currentColor"
+            }, createElement("path", {
+                d: "M16.041 15.856c-0.034 0.026-0.067 0.055-0.099 0.087s-0.060 0.064-0.087 0.099c-1.258 1.213-2.969 1.958-4.855 1.958-1.933 0-3.682-0.782-4.95-2.050s-2.050-3.017-2.050-4.95 0.782-3.682 2.050-4.95 3.017-2.050 4.95-2.050 3.682 0.782 4.95 2.050 2.050 3.017 2.050 4.95c0 1.886-0.745 3.597-1.959 4.856zM21.707 20.293l-3.675-3.675c1.231-1.54 1.968-3.493 1.968-5.618 0-2.485-1.008-4.736-2.636-6.364s-3.879-2.636-6.364-2.636-4.736 1.008-6.364 2.636-2.636 3.879-2.636 6.364 1.008 4.736 2.636 6.364 3.879 2.636 6.364 2.636c2.125 0 4.078-0.737 5.618-1.968l3.675 3.675c0.391 0.391 1.024 0.391 1.414 0s0.391-1.024 0-1.414z"
+            }))), createElement("div", {
+                className: "aa-ItemContentBody"
+            }, createElement("div", {
+                className: "aa-ItemContentTitle"
+            }, createElement(components.ReverseHighlight, {
+                hit: item,
+                attribute: "query"
+            })))), createElement("div", {
+                className: "aa-ItemActions"
+            }, createElement("button", {
+                className: "aa-ItemActionButton",
+                title: "Fill query with \"".concat(item.query, "\""),
+                onClick: function onClick(event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    onTapAhead(item);
+                }
+            }, createElement("svg", {
+                viewBox: "0 0 24 24",
+                fill: "currentColor"
+            }, createElement("path", {
+                d: "M8 17v-7.586l8.293 8.293c0.391 0.391 1.024 0.391 1.414 0s0.391-1.024 0-1.414l-8.293-8.293h7.586c0.552 0 1-0.448 1-1s-0.448-1-1-1h-10c-0.552 0-1 0.448-1 1v10c0 0.552 0.448 1 1 1s1-0.448 1-1z"
+            })))));
+        }
+    };
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["jKwHT","bNKaB"], "bNKaB", "parcelRequire89ec")
 
 //# sourceMappingURL=index.0641b553.js.map

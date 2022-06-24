@@ -95,6 +95,10 @@ index.save_synonym({
     'forwardToReplicas': True
 })
 
+index.set_settings({
+    'separatorsToIndex': '_'
+})
+
 # Filtering example: Only "Motorola" smartphones
 #results = index.search('smartphone', {
 #    'filters': 'brand:Motorola'
