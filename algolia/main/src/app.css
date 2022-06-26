@@ -1,10 +1,11 @@
 body { font-family: sans-serif; padding: 1em; }
-.ais-ClearRefinements { margin: 1em 0; }
+.ais-ClearRefinements { margin: 1em; }
 .ais-Pagination { margin-top: 1em; }
+
 .left-panel { float: left; width: 250px; }
 .right-panel { margin-left: 260px; }
 .ais-InstantSearch { max-width: 960px; overflow: hidden; margin: 0 auto; }
-.ais-Hits-item { margin-bottom: 1em; width: calc(50% - 1rem); }
+.ais-Hits-item { margin-bottom: 1em; margin-top: 1em; width: calc(50% - 1rem); }
 .ais-Hits-item img { margin-right: 1em; }
 .hit-face { margin-bottom: 0.5em; }
 .hit-action { margin-bottom: 0.5em; }
@@ -13,3 +14,7 @@ body { font-family: sans-serif; padding: 1em; }
 .hit-timestamp { color: #000; font-size: 14px; margin-bottom: 0.2em; }
 .hit-filelen { color: #888; font-size: 14px; margin-bottom: 0.2em; }
 .hit-fps { color: #888; font-size: 14px; margin-bottom: 0.2em; }
+
+#sort-by {margin-top: 1em; margin-bottom: 1em; margin-left: 260px; position: absolute;
+    top: 12px; right: 16px}
+    

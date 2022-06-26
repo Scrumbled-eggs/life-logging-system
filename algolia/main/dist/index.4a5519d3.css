@@ -4,7 +4,7 @@ body {
 }
 
 .ais-ClearRefinements {
-  margin: 1em 0;
+  margin: 1em;
 }
 
 .ais-Pagination {
@@ -28,6 +28,7 @@ body {
 
 .ais-Hits-item {
   width: calc(50% - 1rem);
+  margin-top: 1em;
   margin-bottom: 1em;
 }
 
@@ -49,6 +50,15 @@ body {
   color: #888;
   margin-bottom: .2em;
   font-size: 14px;
+}
+
+#sort-by {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  margin-left: 260px;
+  position: absolute;
+  top: 12px;
+  right: 16px;
 }
 
 :root {

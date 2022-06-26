@@ -1,9 +1,9 @@
-5842
+5841
 56/home/ubuntu/life-logging-system/algolia/main/index.html1655962229377650945 0
 57/home/ubuntu/life-logging-system/algolia/main/favicon.png1655843518678409109 0
-56/home/ubuntu/life-logging-system/algolia/main/src/app.js1656045322083975553 0
-59/home/ubuntu/life-logging-system/algolia/main/src/index.css1655843519178406916 0
-57/home/ubuntu/life-logging-system/algolia/main/src/app.css1655853020380787600 0
+56/home/ubuntu/life-logging-system/algolia/main/src/app.js1656193234647119846 0
+59/home/ubuntu/life-logging-system/algolia/main/src/index.css1656193638746501312 0
+57/home/ubuntu/life-logging-system/algolia/main/src/app.css1656193972005983365 0
 49/home/ubuntu/life-logging-system/algolia/main/src1655843519178406916 1
 81/home/ubuntu/life-logging-system/algolia/main/node_modules/is-arrayish/.npmignore1655843519078407355 0
 80/home/ubuntu/life-logging-system/algolia/main/node_modules/is-arrayish/README.md1655843519078407355 0
@@ -1598,7 +1598,7 @@
 90/home/ubuntu/life-logging-system/algolia/main/node_modules/css-select/lib/pseudo-selectors1655843518982407776 1
 124/home/ubuntu/life-logging-system/algolia/main/node_modules/@algolia/autocomplete-core/dist/esm/types/AutocompletePlugin.d.ts1655844017431803959 0
 85/home/ubuntu/life-logging-system/algolia/main/node_modules/@algolia/autocomplete-core1655844015675816854 1
-69/home/ubuntu/life-logging-system/algolia/main/dist/index.61d3354a.css1655959256150697933 0
+69/home/ubuntu/life-logging-system/algolia/main/dist/index.61d3354a.css1656193638914501051 0
 115/home/ubuntu/life-logging-system/algolia/main/node_modules/instantsearch.js/es/components/ClearRefinements/types.js1655844018767794160 0
 103/home/ubuntu/life-logging-system/algolia/main/node_modules/@swc/helpers/lib/_iterable_to_array_limit.js1655844017347804576 0
 82/home/ubuntu/life-logging-system/algolia/main/node_modules/lines-and-columns/build1655843519086407319 1
@@ -1747,7 +1747,7 @@
 106/home/ubuntu/life-logging-system/algolia/main/node_modules/@parcel/watcher/src/watchman/WatchmanBackend.hh1655843518918408056 0
 59/home/ubuntu/life-logging-system/algolia/main/tsconfig.json1655843519178406916 0
 121/home/ubuntu/life-logging-system/algolia/main/node_modules/instantsearch.js/scripts/transforms/addWidget-to-addWidgets.js1655844018367797093 0
-72/home/ubuntu/life-logging-system/algolia/main/dist/index.0641b553.js.map1656045416203425761 0
+72/home/ubuntu/life-logging-system/algolia/main/dist/index.0641b553.js.map1656193234951119385 0
 82/home/ubuntu/life-logging-system/algolia/main/node_modules/@parcel/diagnostic/test1655844016679809479 1
 109/home/ubuntu/life-logging-system/algolia/main/node_modules/lmdb/dependencies/lmdb/libraries/liblmdb/intro.doc1655844018091799117 0
 89/home/ubuntu/life-logging-system/algolia/main/node_modules/htmlparser2/lib/Tokenizer.d.ts1655843519042407512 0
@@ -2105,7 +2105,7 @@
 78/home/ubuntu/life-logging-system/algolia/main/node_modules/prop-types/index.js1655844015911815119 0
 71/home/ubuntu/life-logging-system/algolia/main/dist/favicon.31b65a3d.png1655959256170697818 0
 116/home/ubuntu/life-logging-system/algolia/main/node_modules/@parcel/optimizer-image/parcel-image.linux-arm64-gnu.node1655844018283797709 0
-73/home/ubuntu/life-logging-system/algolia/main/dist/index.61d3354a.css.map1655959256154697910 0
+73/home/ubuntu/life-logging-system/algolia/main/dist/index.61d3354a.css.map1656193638918501045 0
 76/home/ubuntu/life-logging-system/algolia/main/node_modules/@parcel/graph/src1655844017227805456 1
 110/home/ubuntu/life-logging-system/algolia/main/node_modules/@jridgewell/resolve-uri/dist/types/resolve-uri.d.ts1655844016119813592 0
 91/home/ubuntu/life-logging-system/algolia/main/node_modules/hogan.js/dist/hogan-3.0.2.amd.js1655843519030407565 0
@@ -2237,7 +2237,7 @@
 79/home/ubuntu/life-logging-system/algolia/main/node_modules/import-fresh/license1655843519042407512 0
 90/home/ubuntu/life-logging-system/algolia/main/node_modules/caniuse-lite/data/regions/BG.js1655844017627802521 0
 113/home/ubuntu/life-logging-system/algolia/main/node_modules/instantsearch.js/es/widgets/rating-menu/rating-menu.js1655844019015792342 0
-73/home/ubuntu/life-logging-system/algolia/main/dist/index.4a5519d3.css.map1655962267573431937 0
+73/home/ubuntu/life-logging-system/algolia/main/dist/index.4a5519d3.css.map1656193972401982748 0
 92/home/ubuntu/life-logging-system/algolia/main/node_modules/@parcel/workers/src/childState.js1655844016283812387 0
 140/home/ubuntu/life-logging-system/algolia/main/node_modules/@parcel/node-resolver-core/test/fixture/node_modules/package-browser/package.json1655844018139798765 0
 112/home/ubuntu/life-logging-system/algolia/main/node_modules/@parcel/core/test/fixtures/config/subfolder/.parcelrc1655844017275805104 0
@@ -2248,7 +2248,7 @@
 93/home/ubuntu/life-logging-system/algolia/main/node_modules/caniuse-lite/data/features/xhr2.js1655844018903793163 0
 90/home/ubuntu/life-logging-system/algolia/main/node_modules/caniuse-lite/data/regions/GW.js1655844018435796594 0
 121/home/ubuntu/life-logging-system/algolia/main/node_modules/@algolia/autocomplete-core/dist/esm/types/AutocompleteStore.js1655844017495803490 0
-69/home/ubuntu/life-logging-system/algolia/main/dist/index.4a5519d3.css1655962267569431960 0
+69/home/ubuntu/life-logging-system/algolia/main/dist/index.4a5519d3.css1656193972397982755 0
 96/home/ubuntu/life-logging-system/algolia/main/node_modules/dom-serializer/lib/esm/index.d.ts.map1655843518994407723 0
 98/home/ubuntu/life-logging-system/algolia/main/node_modules/caniuse-lite/data/features/png-alpha.js1655844018711794571 0
 114/home/ubuntu/life-logging-system/algolia/main/node_modules/instantsearch.js/es/lib/utils/hits-absolute-position.js1655844018947792841 0
@@ -2443,7 +2443,7 @@
 71/home/ubuntu/life-logging-system/algolia/main/node_modules/@parcel/core1655844018355797181 1
 82/home/ubuntu/life-logging-system/algolia/main/node_modules/mdn-data/css/types.json1655843519106407232 0
 133/home/ubuntu/life-logging-system/algolia/main/node_modules/@parcel/source-map/parcel_sourcemap_wasm/dist-web/parcel_sourcemap_wasm.js1655843518758408758 0
-50/home/ubuntu/life-logging-system/algolia/main/dist1656045416207425737 1
+50/home/ubuntu/life-logging-system/algolia/main/dist1656193972401982748 1
 75/home/ubuntu/life-logging-system/algolia/main/node_modules/parcel/README.md1655844017139806102 0
 62/home/ubuntu/life-logging-system/algolia/main/node_modules/htm1655844017019806983 1
 74/home/ubuntu/life-logging-system/algolia/main/node_modules/htmlparser2/lib1655843519042407512 1
@@ -2733,7 +2733,7 @@
 68/home/ubuntu/life-logging-system/algolia/main/node_modules/term-size1655843519162406986 1
 110/home/ubuntu/life-logging-system/algolia/main/node_modules/instantsearch.js/cjs/components/QueryRuleCustomData1655844018427796653 1
 87/home/ubuntu/life-logging-system/algolia/main/node_modules/@parcel/workers/lib/types.js1655844017319804781 0
-56/home/ubuntu/life-logging-system/algolia/main/algolia.py1656045758265424385 0
+56/home/ubuntu/life-logging-system/algolia/main/algolia.py1656193343298955027 0
 83/home/ubuntu/life-logging-system/algolia/main/node_modules/css-tree/dist/csstree.js1655843518982407776 0
 87/home/ubuntu/life-logging-system/algolia/main/node_modules/entities/lib/encode.d.ts.map1655843518998407705 0
 76/home/ubuntu/life-logging-system/algolia/main/node_modules/react-is/index.js1655844015695816707 0
@@ -3229,7 +3229,7 @@
 101/home/ubuntu/life-logging-system/algolia/main/node_modules/caniuse-lite/data/features/magnetometer.js1655844018583795509 0
 79/home/ubuntu/life-logging-system/algolia/main/node_modules/@parcel/reporter-cli1655844017143806073 1
 103/home/ubuntu/life-logging-system/algolia/main/node_modules/@parcel/source-map/dist/wasm-bindings-web.js1655843518754408776 0
-45/home/ubuntu/life-logging-system/algolia/main1655844029423716352 1
+45/home/ubuntu/life-logging-system/algolia/main1656050427845921677 1
 109/home/ubuntu/life-logging-system/algolia/main/node_modules/caniuse-lite/data/features/css-deviceadaptation.js1655844018015799674 0
 129/home/ubuntu/life-logging-system/algolia/main/node_modules/@algolia/autocomplete-plugin-recent-searches/dist/esm/types/Storage.js1655844017363804458 0
 87/home/ubuntu/life-logging-system/algolia/main/node_modules/cosmiconfig/dist/Explorer.js1655843518978407793 0
@@ -4732,7 +4732,7 @@
 116/home/ubuntu/life-logging-system/algolia/main/node_modules/lmdb/dependencies/lmdb-data-v1/libraries/liblmdb/mtest2.c1655844017923800349 0
 90/home/ubuntu/life-logging-system/algolia/main/node_modules/caniuse-lite/data/regions/KW.js1655844018543795803 0
 121/home/ubuntu/life-logging-system/algolia/main/node_modules/hogan.js/web/builds/3.0.0/hogan.template-3.0.0.min.mustache.js1655843519034407547 0
-68/home/ubuntu/life-logging-system/algolia/main/dist/index.0641b553.js1656045416183425878 0
+68/home/ubuntu/life-logging-system/algolia/main/dist/index.0641b553.js1656193234947119391 0
 90/home/ubuntu/life-logging-system/algolia/main/node_modules/caniuse-lite/data/regions/CO.js1655844017843800936 0
 90/home/ubuntu/life-logging-system/algolia/main/node_modules/caniuse-lite/data/regions/ID.js1655844018459796418 0
 90/home/ubuntu/life-logging-system/algolia/main/node_modules/caniuse-lite/data/regions/BA.js1655844017527803255 0
@@ -5439,7 +5439,6 @@
 106/home/ubuntu/life-logging-system/algolia/main/node_modules/instantsearch.js/cjs/lib/utils/isPlainObject.js1655844018635795128 0
 93/home/ubuntu/life-logging-system/algolia/main/node_modules/cosmiconfig/dist/ExplorerBase.d.ts1655843518978407793 0
 114/home/ubuntu/life-logging-system/algolia/main/node_modules/instantsearch.js/cjs/lib/utils/mergeSearchParameters.js1655844018639795099 0
-57/home/ubuntu/life-logging-system/algolia/main/actors.json1655843518678409109 0
 105/home/ubuntu/life-logging-system/algolia/main/node_modules/instantsearch.js/cjs/lib/utils/isDomElement.js1655844018631795158 0
 109/home/ubuntu/life-logging-system/algolia/main/node_modules/instantsearch.js/cjs/lib/utils/getContainerNode.js1655844018615795275 0
 99/home/ubuntu/life-logging-system/algolia/main/node_modules/caniuse-lite/data/features/css-sticky.js1655844018211798237 0

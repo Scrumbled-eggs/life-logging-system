@@ -36,8 +36,66 @@ index.set_settings({
     # Define business metrics for ranking and sorting
     'customRanking': [
         'asc(frame)'
-        #'desc(face_distance)'
     ]
+})
+
+# create replica 
+index.set_settings({
+  'replicas': [
+    'milestone1_standard_facescore_desc',
+    'milestone1_standard_actionscore_desc',
+    'milestone1_standard_filename_asce'
+  ]
+})
+
+replica_index = client.init_index('milestone1_standard_facescore_desc')
+
+replica_index.set_settings({
+  'ranking': [
+    'desc(face_distance)',
+    'typo',
+    'geo',
+    'words',
+    'filters',
+    'proximity',
+    'attribute',
+    'exact',
+    'custom'
+  ]
+})
+
+replica_index2 = client.init_index('milestone1_standard_actionscore_desc')
+
+replica_index2.set_settings({
+  'ranking': [
+    'desc(action_score)',
+    'typo',
+    'geo',
+    'words',
+    'filters',
+    'proximity',
+    'attribute',
+    'exact',
+    'custom'
+  ]
+})
+
+replica_index3 = client.init_index('milestone1_standard_filename_asce')
+
+replica_index3.set_settings({
+  'customRanking': [
+    'asc(filename)'
+  ],
+  'ranking': [
+    'custom',
+    'typo',
+    'geo',
+    'words',
+    'filters',
+    'proximity',
+    'attribute',
+    'exact'
+  ]
 })
 
 # set default typo tolerance mode

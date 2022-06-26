@@ -82,14 +82,19 @@ search.addWidgets([
   }),
 ]);
 
-//TBD
-sortBy({
-  container: '#sort-by',
-  items: [
-    { label: 'Featured', value: 'milestone1' }
-    ],
-});
+//SORT BY
 
+search.addWidgets([
+  sortBy({
+    container: '#sort-by',
+    items: [
+      { value: 'milestone1', label: 'frame (low - high)' },
+      { value: 'milestone1_standard_filename_asce', label: 'filename (A - Z)' },
+      { value: 'milestone1_standard_facescore_desc', label: 'face score (high - low)' },
+      { value: 'milestone1_standard_actionscore_desc', label: 'action score (high - low)' }
+    ]
+  })
+]);
 
 // Set the InstantSearch index UI state from external events.
 function setInstantSearchUiState(indexUiState) {

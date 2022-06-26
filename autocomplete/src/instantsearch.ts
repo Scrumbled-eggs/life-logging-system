@@ -1,4 +1,5 @@
 import instantsearch from 'instantsearch.js';
+import algoliasearch from 'algoliasearch/lite';
 import { connectSearchBox } from 'instantsearch.js/es/connectors';
 import historyRouter from 'instantsearch.js/es/lib/routers/history';
 import {
@@ -10,13 +11,16 @@ import {
 } from 'instantsearch.js/es/widgets';
 
 import { debounce } from '../src/debounce';
-import { searchClient } from '../src/searchClient';
 
-export const INSTANT_SEARCH_INDEX_NAME = 'instant_search';
+export const INSTANT_SEARCH_INDEX_NAME = 'milestone1';
 export const INSTANT_SEARCH_HIERARCHICAL_ATTRIBUTE =
   'hierarchicalCategories.lvl0';
 
 const instantSearchRouter = historyRouter();
+const searchClient = algoliasearch(
+  '0L0TPDZHFM',
+  '1a42927a7a1ffc3661c466e3a7acda87'
+);
 
 export const search = instantsearch({
   searchClient,
@@ -45,98 +49,26 @@ search.addWidgets([
   }),
   hits({
     container: '#hits',
-    transformItems(items) {
-      return items.map((item) => ({
-        ...item,
-        category: item.categories[0],
-        comments: (item.popularity % 100).toLocaleString(),
-        sale: item.free_shipping,
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        sale_price: item.free_shipping
-          ? (item.price - item.price / 10).toFixed(2)
-          : item.price.toString(),
-      }));
-    },
     templates: {
       item: `
-        <article class="hit">
-          <div class="hit-image">
-            <img src="{{image}}" alt="{{name}}">
-          </div>
-          <div>
-            <h1>
-              {{#helpers.snippet}}{ "attribute": "name" }{{/helpers.snippet}}
-            </h1>
-            <div>
-              By <strong>{{brand}}</strong> in <strong>{{category}}</strong>
-            </div>
-          </div>
-
-          <div
-            style="
-              display: grid;
-              grid-auto-flow: column;
-              justify-content: start;
-              align-items: center;
-              gap: 8px;
-            "
-          >
-            {{#rating}}
-              <div
-                style="
-                  display: grid;
-                  grid-auto-flow: column;
-                  justify-content: start;
-                  align-items: center;
-                  gap: 4px;
-                "
-              >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="#e2a400"
-                  stroke="#e2a400"
-                  stroke-width="1"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                </svg>
-                {{rating}}
-              </div>
-            {{/rating}}
-
-            <div
-              style="
-                display: grid;
-                grid-auto-flow: column;
-                justify-content: start;
-                align-items: center;
-                gap: 4px;
-              "
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                style="
-                  position: relative;
-                  top: 1px;
-                "
-              >
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-              </svg>
-              <span>{{comments}}</span>
-            </div>
-          </div>
-        </article>
-      `,
+<div>
+      <div class="hit-face">
+        {{#helpers.highlight}}{ "attribute": "face" }{{/helpers.highlight}}
+      </div>
+      <div class="hit-action">
+        {{#helpers.highlight}}{ "attribute": "action" }{{/helpers.highlight}}
+      </div>
+      <div class="hit-file">
+      filename:
+      {{#helpers.highlight}}{ "attribute": "filename" }{{/helpers.highlight}}
+      </div>
+      <div class="hit-frame">frame:{{frame}}</div>
+      <div class="hit-timestamp">timestamp(s):{{timestamp(s)}}</div>
+      <div class="hit-filelen">filelength(s):{{filelength(s)}}</div>
+      <div class="hit-fps">fps:{{fps}}</div>
+    </div>
+`,
+      empty: 'No result for <q>{{ query }}</q>'
     },
   }),
   pagination({
