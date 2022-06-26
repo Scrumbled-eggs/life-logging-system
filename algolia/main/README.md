@@ -1,4 +1,4 @@
-# ais-ecommerce-demo-app
+# Search System
 
 _This project was generated with [create-instantsearch-app](https://github.com/algolia/create-instantsearch-app) by [Algolia](https://algolia.com)._
 
@@ -18,4 +18,4 @@ yarn
 yarn start
 ```
 
-Open http://localhost:3000 to see your app.
+Open http://3.238.111.131:1234 to access the search system.
