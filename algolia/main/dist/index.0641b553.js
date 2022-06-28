@@ -550,6 +550,11 @@ const search = _instantsearchJsDefault.default({
 });
 const virtualSearchBox = _connectors.connectSearchBox(()=>{});
 search.addWidgets([
+    _widgets.refinementList({
+        container: '#face-attr',
+        attribute: 'face_attributes',
+        showMore: true
+    }),
     _widgets.rangeSlider({
         container: '#filter-list',
         attribute: 'filelength(s)'
@@ -581,7 +586,8 @@ search.addWidgets([
       <div class="hit-timestamp">timestamp(s):{{timestamp(s)}}</div>
       <div class="hit-filelen">filelength(s):{{filelength(s)}}</div>
       <div class="hit-fps">fps:{{fps}}</div>
-    </div>
+      <div class="hit-faceattr">facial attributes:{{face_attributes}}</div>
+      </div>
 `,
             empty: 'No result for <q>{{ query }}</q>'
         }

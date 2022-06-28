@@ -1,9 +1,7 @@
 {
-  "name": "@algolia/autocomplete-example-instantsearch",
-  "description": "Autocomplete with InstantSearch example",
-  "version": "1.6.3",
+  "name": "ais-ecommerce-demo-app",
+  "version": "1.0.0",
   "private": true,
-  "license": "MIT",
   "scripts": {
     "build": "parcel build index.html",
     "start": "parcel index.html"
@@ -27,3 +25,4 @@
     "javascript"
   ]
 }
+

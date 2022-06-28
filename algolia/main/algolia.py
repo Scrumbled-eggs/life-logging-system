@@ -14,7 +14,7 @@ index = client.init_index(your_index_name)
 # fetch dataset from a file
 with open('./temp.json') as f:
     records = json.load(f)
-
+print(records)
 # send data to Algolia
 index.save_objects(records, {'autoGenerateObjectIDIfNotExist': True})
 
@@ -30,7 +30,8 @@ index.set_settings({
 index.set_settings({
     'attributesForFaceting': [
         'filelength(s)',
-        'fps' # fileterOnly(country) Filter-only attributes are helpful when you don’t need to offer a choice to the user.
+        'fps',
+        'face_attributes' # fileterOnly(country) Filter-only attributes are helpful when you don’t need to offer a choice to the user.
                 # searchable(country) When thousands of different values for a given facet attribute. let users search within a specific faceted attribute
     ],
     # Define business metrics for ranking and sorting
@@ -153,8 +154,14 @@ index.save_synonym({
     'forwardToReplicas': True
 })
 
+# add '_' as separators for search
 index.set_settings({
     'separatorsToIndex': '_'
+})
+
+# remove works from the query if no results
+index.set_settings({
+    'removeWordsIfNoResults': 'allOptional'
 })
 
 # Filtering example: Only "Motorola" smartphones

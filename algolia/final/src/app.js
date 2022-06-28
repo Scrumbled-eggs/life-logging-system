@@ -23,7 +23,7 @@ const searchClient = algoliasearch(
   '1a42927a7a1ffc3661c466e3a7acda87'
 );
 
-const INSTANT_SEARCH_INDEX_NAME = 'milestone1'
+const INSTANT_SEARCH_INDEX_NAME = 'milestone3'
 const instantSearchRouter = historyRouter()
 
 const search = instantsearch({
