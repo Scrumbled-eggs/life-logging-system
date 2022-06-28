@@ -12,7 +12,7 @@ client = SearchClient.create(YourApplicationID, YourAPIKey)
 index = client.init_index(your_index_name)
 
 # fetch dataset from a file
-with open('./milestone1.json') as f:
+with open('./temp.json') as f:
     records = json.load(f)
 
 # send data to Algolia

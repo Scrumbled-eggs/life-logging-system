@@ -1,11 +1,10 @@
 body,
 
 .header {
-  background: rgb(252 252 255 / 92%);
+  background: rgb(255 255 255 / 92%);
   box-shadow: 0 0 0 1px rgba(35, 38, 59, 0.05),
     0 1px 3px 0 rgba(35, 38, 59, 0.15);
   padding: 0.5rem 0;
-  position: fixed;
   top: 0;
   width: 100%;
 }
@@ -20,8 +19,12 @@ body,
   font-weight: 500;
 }
 
+header img {
+  align-items: center;
+}
+
 body {
-  background-color: rgb(244, 244, 249);
+  background-color: rgb(255, 255, 255);
   color: rgb(65, 65, 65);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',

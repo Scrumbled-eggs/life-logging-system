@@ -550,14 +550,13 @@ const search = _instantsearchJsDefault.default({
 });
 const virtualSearchBox = _connectors.connectSearchBox(()=>{});
 search.addWidgets([
-    _widgets.refinementList({
+    _widgets.rangeSlider({
         container: '#filter-list',
         attribute: 'filelength(s)'
     }),
-    _widgets.refinementList({
+    _widgets.rangeSlider({
         container: '#fps-list',
-        attribute: 'fps',
-        showMore: true
+        attribute: 'fps'
     }),
     _widgets.configure({
         hitsPerPage: 16
@@ -11626,7 +11625,7 @@ var _debounce = require("./debounce");
 var _serializer = require("./serializer");
 var _getWidgetAttribute = require("./getWidgetAttribute");
 
-},{"./capitalize":"1J2wi","./defer":"bO5Os","./isDomElement":"3TY64","./getContainerNode":"ayQ3q","./isSpecialClick":"lKDby","./prepareTemplateProps":"3Knzg","./renderTemplate":"cpZ6z","./getRefinements":false,"./clearRefinements":false,"./escapeRefinement":false,"./unescapeRefinement":false,"./checkRendering":"jF2C6","./checkIndexUiState":"bH0Ll","./getPropertyByPath":"2Q0lT","./getObjectType":"3XQ8P","./noop":"6iazv","./isFiniteNumber":false,"./isPlainObject":"cIivc","./uniq":"2Q0ce","./range":"1dHGc","./isEqual":"14V8N","./escape":"eLn1u","./unescape":"cWsJ0","./concatHighlightedParts":"12qh7","./getHighlightedParts":"7jCC9","./getHighlightFromSiblings":"fAPc5","./reverseHighlightedParts":"kBcoN","./find":"6Dhef","./findIndex":"8tlAy","./mergeSearchParameters":"9Li6L","./resolveSearchParameters":"a7lVI","./toArray":false,"./logger":"glTTt","./escape-highlight":"59mW0","./documentation":"gLqHy","./geo-search":false,"./hits-absolute-position":"dMQpP","./hits-query-id":"iBpEo","./isFacetRefined":"b5SV4","./createSendEventForFacet":"05go2","./createSendEventForHits":"24sIF","./getAppIdAndApiKey":false,"./convertNumericRefinementsToFilters":false,"./createConcurrentSafePromise":false,"./debounce":false,"./serializer":"jg61H","./getWidgetAttribute":false,"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"1J2wi":[function(require,module,exports) {
+},{"./capitalize":"1J2wi","./defer":"bO5Os","./isDomElement":"3TY64","./getContainerNode":"ayQ3q","./isSpecialClick":"lKDby","./prepareTemplateProps":"3Knzg","./renderTemplate":"cpZ6z","./getRefinements":false,"./clearRefinements":false,"./escapeRefinement":false,"./unescapeRefinement":false,"./checkRendering":"jF2C6","./checkIndexUiState":"bH0Ll","./getPropertyByPath":"2Q0lT","./getObjectType":"3XQ8P","./noop":"6iazv","./isFiniteNumber":"gQhvL","./isPlainObject":"cIivc","./uniq":"2Q0ce","./range":"1dHGc","./isEqual":"14V8N","./escape":"eLn1u","./unescape":"cWsJ0","./concatHighlightedParts":"12qh7","./getHighlightedParts":"7jCC9","./getHighlightFromSiblings":"fAPc5","./reverseHighlightedParts":"kBcoN","./find":"6Dhef","./findIndex":"8tlAy","./mergeSearchParameters":"9Li6L","./resolveSearchParameters":"a7lVI","./toArray":false,"./logger":"glTTt","./escape-highlight":"59mW0","./documentation":"gLqHy","./geo-search":false,"./hits-absolute-position":"dMQpP","./hits-query-id":"iBpEo","./isFacetRefined":"b5SV4","./createSendEventForFacet":"05go2","./createSendEventForHits":"24sIF","./getAppIdAndApiKey":false,"./convertNumericRefinementsToFilters":"ekxD4","./createConcurrentSafePromise":false,"./debounce":false,"./serializer":"jg61H","./getWidgetAttribute":false,"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"1J2wi":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 function capitalize(text) {
@@ -12790,6 +12789,17 @@ function getPropertyByPath(object, path) {
 }
 exports.default = getPropertyByPath;
 
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gQhvL":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+// This is the `Number.isFinite()` polyfill recommended by MDN.
+// We do not provide any tests for this function.
+// See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite#Polyfill
+function isFiniteNumber(value) {
+    return typeof value === 'number' && isFinite(value);
+}
+exports.default = isFiniteNumber;
+
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"cIivc":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -13664,6 +13674,31 @@ function serializePayload(payload) {
 }
 function deserializePayload(payload) {
     return JSON.parse(decodeURIComponent(atob(payload)));
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"ekxD4":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "convertNumericRefinementsToFilters", ()=>convertNumericRefinementsToFilters
+);
+function convertNumericRefinementsToFilters(state, attribute) {
+    if (!state) return null;
+    var filtersObj = state.numericRefinements[attribute];
+    /*
+    filtersObj === {
+      "<=": [10],
+      "=": [],
+      ">=": [5]
+    }
+  */ var filters = [];
+    Object.keys(filtersObj).filter(function(operator) {
+        return Array.isArray(filtersObj[operator]) && filtersObj[operator].length > 0;
+    }).forEach(function(operator) {
+        filtersObj[operator].forEach(function(value) {
+            filters.push("".concat(attribute).concat(operator).concat(value));
+        });
+    });
+    return filters;
 }
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hkkLK":[function(require,module,exports) {
@@ -15125,7 +15160,7 @@ var _connectRelevantSortDefault = parcelHelpers.interopDefault(_connectRelevantS
 var _connectDynamicWidgets = require("./dynamic-widgets/connectDynamicWidgets");
 var _connectDynamicWidgetsDefault = parcelHelpers.interopDefault(_connectDynamicWidgets);
 
-},{"./clear-refinements/connectClearRefinements":false,"./current-refinements/connectCurrentRefinements":false,"./hierarchical-menu/connectHierarchicalMenu":"kygBT","./hits/connectHits":"b5DNx","./hits/connectHitsWithInsights":false,"./hits-per-page/connectHitsPerPage":false,"./infinite-hits/connectInfiniteHits":false,"./infinite-hits/connectInfiniteHitsWithInsights":false,"./menu/connectMenu":false,"./numeric-menu/connectNumericMenu":false,"./pagination/connectPagination":"bHouJ","./range/connectRange":false,"./refinement-list/connectRefinementList":"kkKYv","./search-box/connectSearchBox":"kqCmi","./sort-by/connectSortBy":"3pFgJ","./rating-menu/connectRatingMenu":false,"./stats/connectStats":false,"./toggle-refinement/connectToggleRefinement":false,"./breadcrumb/connectBreadcrumb":false,"./geo-search/connectGeoSearch":false,"./powered-by/connectPoweredBy":false,"./configure/connectConfigure":"lvgHS","./configure-related-items/connectConfigureRelatedItems":false,"./autocomplete/connectAutocomplete":false,"./query-rules/connectQueryRules":false,"./voice-search/connectVoiceSearch":false,"./answers/connectAnswers":false,"./relevant-sort/connectRelevantSort":false,"./dynamic-widgets/connectDynamicWidgets":false,"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"kygBT":[function(require,module,exports) {
+},{"./clear-refinements/connectClearRefinements":false,"./current-refinements/connectCurrentRefinements":false,"./hierarchical-menu/connectHierarchicalMenu":"kygBT","./hits/connectHits":"b5DNx","./hits/connectHitsWithInsights":false,"./hits-per-page/connectHitsPerPage":false,"./infinite-hits/connectInfiniteHits":false,"./infinite-hits/connectInfiniteHitsWithInsights":false,"./menu/connectMenu":false,"./numeric-menu/connectNumericMenu":false,"./pagination/connectPagination":"bHouJ","./range/connectRange":"abXn7","./refinement-list/connectRefinementList":"kkKYv","./search-box/connectSearchBox":"kqCmi","./sort-by/connectSortBy":"3pFgJ","./rating-menu/connectRatingMenu":false,"./stats/connectStats":false,"./toggle-refinement/connectToggleRefinement":false,"./breadcrumb/connectBreadcrumb":false,"./geo-search/connectGeoSearch":false,"./powered-by/connectPoweredBy":false,"./configure/connectConfigure":"lvgHS","./configure-related-items/connectConfigureRelatedItems":false,"./autocomplete/connectAutocomplete":false,"./query-rules/connectQueryRules":false,"./voice-search/connectVoiceSearch":false,"./answers/connectAnswers":false,"./relevant-sort/connectRelevantSort":false,"./dynamic-widgets/connectDynamicWidgets":false,"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"kygBT":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _utils = require("../../lib/utils");
@@ -15759,6 +15794,320 @@ var Paginator = /*#__PURE__*/ function() {
     return Paginator1;
 }();
 exports.default = Paginator;
+
+},{"../../lib/utils":"etVYs","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"abXn7":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _utils = require("../../lib/utils");
+function ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+    if (Object.getOwnPropertySymbols) {
+        var symbols = Object.getOwnPropertySymbols(object);
+        if (enumerableOnly) symbols = symbols.filter(function(sym) {
+            return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+        });
+        keys.push.apply(keys, symbols);
+    }
+    return keys;
+}
+function _objectSpread(target) {
+    for(var i = 1; i < arguments.length; i++){
+        var source = arguments[i] != null ? arguments[i] : {};
+        if (i % 2) ownKeys(Object(source), true).forEach(function(key) {
+            _defineProperty(target, key, source[key]);
+        });
+        else if (Object.getOwnPropertyDescriptors) Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+        else ownKeys(Object(source)).forEach(function(key) {
+            Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
+    }
+    return target;
+}
+function _defineProperty(obj, key, value) {
+    if (key in obj) Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+    });
+    else obj[key] = value;
+    return obj;
+}
+function _slicedToArray(arr, i) {
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
+}
+function _nonIterableRest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+}
+function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+    for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
+    return arr2;
+}
+function _iterableToArrayLimit(arr, i) {
+    if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _e = undefined;
+    try {
+        for(var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true){
+            _arr.push(_s.value);
+            if (i && _arr.length === i) break;
+        }
+    } catch (err) {
+        _d = true;
+        _e = err;
+    } finally{
+        try {
+            if (!_n && _i["return"] != null) _i["return"]();
+        } finally{
+            if (_d) throw _e;
+        }
+    }
+    return _arr;
+}
+function _arrayWithHoles(arr) {
+    if (Array.isArray(arr)) return arr;
+}
+var withUsage = _utils.createDocumentationMessageGenerator({
+    name: 'range-input',
+    connector: true
+}, {
+    name: 'range-slider',
+    connector: true
+});
+var $$type = 'ais.range';
+function toPrecision(_ref) {
+    var min = _ref.min, max = _ref.max, precision = _ref.precision;
+    var pow = Math.pow(10, precision);
+    return {
+        min: min ? Math.floor(min * pow) / pow : min,
+        max: max ? Math.ceil(max * pow) / pow : max
+    };
+}
+/**
+ * **Range** connector provides the logic to create custom widget that will let
+ * the user refine results using a numeric range.
+ *
+ * This connectors provides a `refine()` function that accepts bounds. It will also provide
+ * information about the min and max bounds for the current result set.
+ */ var connectRange = function connectRange(renderFn) {
+    var unmountFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.noop;
+    _utils.checkRendering(renderFn, withUsage());
+    return function(widgetParams) {
+        var _ref2 = widgetParams || {}, _ref2$attribute = _ref2.attribute, attribute = _ref2$attribute === void 0 ? '' : _ref2$attribute, minBound = _ref2.min, maxBound = _ref2.max, _ref2$precision = _ref2.precision, precision = _ref2$precision === void 0 ? 0 : _ref2$precision;
+        if (!attribute) throw new Error(withUsage('The `attribute` option is required.'));
+        if (_utils.isFiniteNumber(minBound) && _utils.isFiniteNumber(maxBound) && minBound > maxBound) throw new Error(withUsage("The `max` option can't be lower than `min`."));
+        var formatToNumber = function formatToNumber(v) {
+            return Number(Number(v).toFixed(precision));
+        };
+        var rangeFormatter = {
+            from: function from(v) {
+                return v.toLocaleString();
+            },
+            to: function to(v) {
+                return formatToNumber(v).toLocaleString();
+            }
+        }; // eslint-disable-next-line complexity
+        var getRefinedState = function getRefinedState(helper, currentRange, nextMin, nextMax) {
+            var resolvedState = helper.state;
+            var currentRangeMin = currentRange.min, currentRangeMax = currentRange.max;
+            var _ref3 = resolvedState.getNumericRefinement(attribute, '>=') || [], _ref4 = _slicedToArray(_ref3, 1), min = _ref4[0];
+            var _ref5 = resolvedState.getNumericRefinement(attribute, '<=') || [], _ref6 = _slicedToArray(_ref5, 1), max = _ref6[0];
+            var isResetMin = nextMin === undefined || nextMin === '';
+            var isResetMax = nextMax === undefined || nextMax === '';
+            var _toPrecision = toPrecision({
+                min: !isResetMin ? parseFloat(nextMin) : undefined,
+                max: !isResetMax ? parseFloat(nextMax) : undefined,
+                precision: precision
+            }), nextMinAsNumber = _toPrecision.min, nextMaxAsNumber = _toPrecision.max;
+            var newNextMin;
+            if (!_utils.isFiniteNumber(minBound) && currentRangeMin === nextMinAsNumber) newNextMin = undefined;
+            else if (_utils.isFiniteNumber(minBound) && isResetMin) newNextMin = minBound;
+            else newNextMin = nextMinAsNumber;
+            var newNextMax;
+            if (!_utils.isFiniteNumber(maxBound) && currentRangeMax === nextMaxAsNumber) newNextMax = undefined;
+            else if (_utils.isFiniteNumber(maxBound) && isResetMax) newNextMax = maxBound;
+            else newNextMax = nextMaxAsNumber;
+            var isResetNewNextMin = newNextMin === undefined;
+            var isGreaterThanCurrentRange = _utils.isFiniteNumber(currentRangeMin) && currentRangeMin <= newNextMin;
+            var isMinValid = isResetNewNextMin || _utils.isFiniteNumber(newNextMin) && (!_utils.isFiniteNumber(currentRangeMin) || isGreaterThanCurrentRange);
+            var isResetNewNextMax = newNextMax === undefined;
+            var isLowerThanRange = _utils.isFiniteNumber(newNextMax) && currentRangeMax >= newNextMax;
+            var isMaxValid = isResetNewNextMax || _utils.isFiniteNumber(newNextMax) && (!_utils.isFiniteNumber(currentRangeMax) || isLowerThanRange);
+            var hasMinChange = min !== newNextMin;
+            var hasMaxChange = max !== newNextMax;
+            if ((hasMinChange || hasMaxChange) && isMinValid && isMaxValid) {
+                resolvedState = resolvedState.removeNumericRefinement(attribute);
+                if (_utils.isFiniteNumber(newNextMin)) resolvedState = resolvedState.addNumericRefinement(attribute, '>=', newNextMin);
+                if (_utils.isFiniteNumber(newNextMax)) resolvedState = resolvedState.addNumericRefinement(attribute, '<=', newNextMax);
+                return resolvedState;
+            }
+            return null;
+        };
+        var sendEventWithRefinedState = function sendEventWithRefinedState(refinedState, instantSearchInstance, helper) {
+            var eventName = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'Filter Applied';
+            var filters = _utils.convertNumericRefinementsToFilters(refinedState, attribute);
+            if (filters && filters.length > 0) instantSearchInstance.sendEventToInsights({
+                insightsMethod: 'clickedFilters',
+                widgetType: $$type,
+                eventType: 'click',
+                payload: {
+                    eventName: eventName,
+                    index: helper.getIndex(),
+                    filters: filters
+                },
+                attribute: attribute
+            });
+        };
+        var createSendEvent = function createSendEvent(instantSearchInstance, helper, currentRange) {
+            return function() {
+                for(var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++)args[_key] = arguments[_key];
+                if (args.length === 1) {
+                    instantSearchInstance.sendEventToInsights(args[0]);
+                    return;
+                }
+                var eventType = args[0], facetValue = args[1], eventName = args[2];
+                if (eventType !== 'click') return;
+                var _facetValue = _slicedToArray(facetValue, 2), nextMin = _facetValue[0], nextMax = _facetValue[1];
+                var refinedState = getRefinedState(helper, currentRange, nextMin, nextMax);
+                sendEventWithRefinedState(refinedState, instantSearchInstance, helper, eventName);
+            };
+        };
+        function _getCurrentRange(stats) {
+            var min;
+            if (_utils.isFiniteNumber(minBound)) min = minBound;
+            else if (_utils.isFiniteNumber(stats.min)) min = stats.min;
+            else min = 0;
+            var max;
+            if (_utils.isFiniteNumber(maxBound)) max = maxBound;
+            else if (_utils.isFiniteNumber(stats.max)) max = stats.max;
+            else max = 0;
+            return toPrecision({
+                min: min,
+                max: max,
+                precision: precision
+            });
+        }
+        function _getCurrentRefinement(helper) {
+            var _ref7 = helper.getNumericRefinement(attribute, '>=') || [], _ref8 = _slicedToArray(_ref7, 1), minValue = _ref8[0];
+            var _ref9 = helper.getNumericRefinement(attribute, '<=') || [], _ref10 = _slicedToArray(_ref9, 1), maxValue = _ref10[0];
+            var min = _utils.isFiniteNumber(minValue) ? minValue : -Infinity;
+            var max = _utils.isFiniteNumber(maxValue) ? maxValue : Infinity;
+            return [
+                min,
+                max
+            ];
+        }
+        function _refine(instantSearchInstance, helper, currentRange) {
+            return function() {
+                var _ref11 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [
+                    undefined,
+                    undefined
+                ], _ref12 = _slicedToArray(_ref11, 2), nextMin = _ref12[0], nextMax = _ref12[1];
+                var refinedState = getRefinedState(helper, currentRange, nextMin, nextMax);
+                if (refinedState) {
+                    sendEventWithRefinedState(refinedState, instantSearchInstance, helper);
+                    helper.setState(refinedState).search();
+                }
+            };
+        }
+        return {
+            $$type: $$type,
+            init: function init(initOptions) {
+                renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(initOptions)), {}, {
+                    instantSearchInstance: initOptions.instantSearchInstance
+                }), true);
+            },
+            render: function render(renderOptions) {
+                renderFn(_objectSpread(_objectSpread({}, this.getWidgetRenderState(renderOptions)), {}, {
+                    instantSearchInstance: renderOptions.instantSearchInstance
+                }), false);
+            },
+            getRenderState: function getRenderState(renderState, renderOptions) {
+                return _objectSpread(_objectSpread({}, renderState), {}, {
+                    range: _objectSpread(_objectSpread({}, renderState.range), {}, _defineProperty({}, attribute, this.getWidgetRenderState(renderOptions)))
+                });
+            },
+            getWidgetRenderState: function getWidgetRenderState(_ref13) {
+                var results = _ref13.results, helper = _ref13.helper, instantSearchInstance = _ref13.instantSearchInstance;
+                var facetsFromResults = results && results.disjunctiveFacets || [];
+                var facet = _utils.find(facetsFromResults, function(facetResult) {
+                    return facetResult.name === attribute;
+                });
+                var stats = facet && facet.stats || {
+                    min: undefined,
+                    max: undefined
+                };
+                var currentRange = _getCurrentRange(stats);
+                var start = _getCurrentRefinement(helper);
+                var refine;
+                if (!results) // On first render pass an empty range
+                // to be able to bypass the validation
+                // related to it
+                refine = _refine(instantSearchInstance, helper, {
+                    min: undefined,
+                    max: undefined
+                });
+                else refine = _refine(instantSearchInstance, helper, currentRange);
+                return {
+                    refine: refine,
+                    canRefine: currentRange.min !== currentRange.max,
+                    format: rangeFormatter,
+                    range: currentRange,
+                    sendEvent: createSendEvent(instantSearchInstance, helper, currentRange),
+                    widgetParams: _objectSpread(_objectSpread({}, widgetParams), {}, {
+                        precision: precision
+                    }),
+                    start: start
+                };
+            },
+            dispose: function dispose(_ref14) {
+                var state = _ref14.state;
+                unmountFn();
+                return state.removeDisjunctiveFacet(attribute).removeNumericRefinement(attribute);
+            },
+            getWidgetUiState: function getWidgetUiState(uiState, _ref15) {
+                var searchParameters = _ref15.searchParameters;
+                var _searchParameters$get = searchParameters.getNumericRefinements(attribute), _searchParameters$get2 = _searchParameters$get['>='], min = _searchParameters$get2 === void 0 ? [] : _searchParameters$get2, _searchParameters$get3 = _searchParameters$get['<='], max = _searchParameters$get3 === void 0 ? [] : _searchParameters$get3;
+                if (min.length === 0 && max.length === 0) return uiState;
+                return _objectSpread(_objectSpread({}, uiState), {}, {
+                    range: _objectSpread(_objectSpread({}, uiState.range), {}, _defineProperty({}, attribute, "".concat(min, ":").concat(max)))
+                });
+            },
+            getWidgetSearchParameters: function getWidgetSearchParameters(searchParameters, _ref16) {
+                var uiState = _ref16.uiState;
+                var widgetSearchParameters = searchParameters.addDisjunctiveFacet(attribute).setQueryParameters({
+                    numericRefinements: _objectSpread(_objectSpread({}, searchParameters.numericRefinements), {}, _defineProperty({}, attribute, {}))
+                });
+                if (_utils.isFiniteNumber(minBound)) widgetSearchParameters = widgetSearchParameters.addNumericRefinement(attribute, '>=', minBound);
+                if (_utils.isFiniteNumber(maxBound)) widgetSearchParameters = widgetSearchParameters.addNumericRefinement(attribute, '<=', maxBound);
+                var value = uiState.range && uiState.range[attribute];
+                if (!value || value.indexOf(':') === -1) return widgetSearchParameters;
+                var _value$split$map = value.split(':').map(parseFloat), _value$split$map2 = _slicedToArray(_value$split$map, 2), lowerBound = _value$split$map2[0], upperBound = _value$split$map2[1];
+                if (_utils.isFiniteNumber(lowerBound) && (!_utils.isFiniteNumber(minBound) || minBound < lowerBound)) {
+                    widgetSearchParameters = widgetSearchParameters.removeNumericRefinement(attribute, '>=');
+                    widgetSearchParameters = widgetSearchParameters.addNumericRefinement(attribute, '>=', lowerBound);
+                }
+                if (_utils.isFiniteNumber(upperBound) && (!_utils.isFiniteNumber(maxBound) || upperBound < maxBound)) {
+                    widgetSearchParameters = widgetSearchParameters.removeNumericRefinement(attribute, '<=');
+                    widgetSearchParameters = widgetSearchParameters.addNumericRefinement(attribute, '<=', upperBound);
+                }
+                return widgetSearchParameters;
+            }
+        };
+    };
+};
+exports.default = connectRange;
 
 },{"../../lib/utils":"etVYs","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"kkKYv":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
@@ -16539,7 +16888,7 @@ var _relevantSortDefault = parcelHelpers.interopDefault(_relevantSort);
 var _dynamicWidgets = require("./dynamic-widgets/dynamic-widgets");
 var _dynamicWidgetsDefault = parcelHelpers.interopDefault(_dynamicWidgets);
 
-},{"./clear-refinements/clear-refinements":false,"./configure/configure":"gLYAR","./configure-related-items/configure-related-items":false,"./current-refinements/current-refinements":false,"./geo-search/geo-search":false,"./hierarchical-menu/hierarchical-menu":"8xdmn","./hits/hits":"bPDYG","./hits-per-page/hits-per-page":false,"./infinite-hits/infinite-hits":false,"./menu/menu":false,"./refinement-list/refinement-list":"5rn2R","./numeric-menu/numeric-menu":false,"./pagination/pagination":"aGC8J","./range-input/range-input":false,"./search-box/search-box":false,"./range-slider/range-slider":false,"./sort-by/sort-by":"2sKTT","./rating-menu/rating-menu":false,"./stats/stats":false,"./toggle-refinement/toggle-refinement":false,"./analytics/analytics":false,"./breadcrumb/breadcrumb":false,"./menu-select/menu-select":false,"./powered-by/powered-by":false,"./panel/panel":"1PjLA","./voice-search/voice-search":false,"./query-rule-custom-data/query-rule-custom-data":false,"./query-rule-context/query-rule-context":false,"./index/index":"kdZTz","./places/places":false,"./answers/answers":false,"./relevant-sort/relevant-sort":false,"./dynamic-widgets/dynamic-widgets":false,"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gLYAR":[function(require,module,exports) {
+},{"./clear-refinements/clear-refinements":false,"./configure/configure":"gLYAR","./configure-related-items/configure-related-items":false,"./current-refinements/current-refinements":false,"./geo-search/geo-search":false,"./hierarchical-menu/hierarchical-menu":"8xdmn","./hits/hits":"bPDYG","./hits-per-page/hits-per-page":false,"./infinite-hits/infinite-hits":false,"./menu/menu":false,"./refinement-list/refinement-list":"5rn2R","./numeric-menu/numeric-menu":false,"./pagination/pagination":"aGC8J","./range-input/range-input":false,"./search-box/search-box":false,"./range-slider/range-slider":"4PvhT","./sort-by/sort-by":"2sKTT","./rating-menu/rating-menu":false,"./stats/stats":false,"./toggle-refinement/toggle-refinement":false,"./analytics/analytics":false,"./breadcrumb/breadcrumb":false,"./menu-select/menu-select":false,"./powered-by/powered-by":false,"./panel/panel":"1PjLA","./voice-search/voice-search":false,"./query-rule-custom-data/query-rule-custom-data":false,"./query-rule-context/query-rule-context":false,"./index/index":"kdZTz","./places/places":false,"./answers/answers":false,"./relevant-sort/relevant-sort":false,"./dynamic-widgets/dynamic-widgets":false,"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gLYAR":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _connectConfigure = require("../../connectors/configure/connectConfigure");
@@ -18684,7 +19033,1174 @@ function PaginationLink(_ref) {
 }
 exports.default = PaginationLink;
 
-},{"preact":"26zcy","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"2sKTT":[function(require,module,exports) {
+},{"preact":"26zcy","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4PvhT":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+/** @jsx h */ var _preact = require("preact");
+var _classnames = require("classnames");
+var _classnamesDefault = parcelHelpers.interopDefault(_classnames);
+var _slider = require("../../components/Slider/Slider");
+var _sliderDefault = parcelHelpers.interopDefault(_slider);
+var _connectRange = require("../../connectors/range/connectRange");
+var _connectRangeDefault = parcelHelpers.interopDefault(_connectRange);
+var _utils = require("../../lib/utils");
+var _suit = require("../../lib/suit");
+function ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+    if (Object.getOwnPropertySymbols) {
+        var symbols = Object.getOwnPropertySymbols(object);
+        if (enumerableOnly) symbols = symbols.filter(function(sym) {
+            return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+        });
+        keys.push.apply(keys, symbols);
+    }
+    return keys;
+}
+function _objectSpread(target) {
+    for(var i = 1; i < arguments.length; i++){
+        var source = arguments[i] != null ? arguments[i] : {};
+        if (i % 2) ownKeys(Object(source), true).forEach(function(key) {
+            _defineProperty(target, key, source[key]);
+        });
+        else if (Object.getOwnPropertyDescriptors) Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+        else ownKeys(Object(source)).forEach(function(key) {
+            Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
+    }
+    return target;
+}
+function _defineProperty(obj, key, value) {
+    if (key in obj) Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+    });
+    else obj[key] = value;
+    return obj;
+}
+function _slicedToArray(arr, i) {
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
+}
+function _nonIterableRest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+}
+function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+    for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
+    return arr2;
+}
+function _iterableToArrayLimit(arr, i) {
+    if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _e = undefined;
+    try {
+        for(var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true){
+            _arr.push(_s.value);
+            if (i && _arr.length === i) break;
+        }
+    } catch (err) {
+        _d = true;
+        _e = err;
+    } finally{
+        try {
+            if (!_n && _i["return"] != null) _i["return"]();
+        } finally{
+            if (_d) throw _e;
+        }
+    }
+    return _arr;
+}
+function _arrayWithHoles(arr) {
+    if (Array.isArray(arr)) return arr;
+}
+var withUsage = _utils.createDocumentationMessageGenerator({
+    name: 'range-slider'
+});
+var suit = _suit.component('RangeSlider');
+var renderer = function renderer(_ref) {
+    var containerNode = _ref.containerNode, cssClasses = _ref.cssClasses, pips = _ref.pips, step = _ref.step, tooltips = _ref.tooltips;
+    return function(_ref2, isFirstRendering) {
+        var refine = _ref2.refine, range = _ref2.range, start = _ref2.start;
+        if (isFirstRendering) // There's no information at this point, let's render nothing.
+        return;
+        var minRange = range.min, maxRange = range.max;
+        var _start = _slicedToArray(start, 2), minStart = _start[0], maxStart = _start[1];
+        var minFinite = minStart === -Infinity ? minRange : minStart;
+        var maxFinite = maxStart === Infinity ? maxRange : maxStart; // Clamp values to the range for avoid extra rendering & refinement
+        // Should probably be done on the connector side, but we need to stay
+        // backward compatible so we still need to pass [-Infinity, Infinity]
+        var values = [
+            minFinite > maxRange ? maxRange : minFinite,
+            maxFinite < minRange ? minRange : maxFinite
+        ];
+        _preact.render(_preact.h(_sliderDefault.default, {
+            cssClasses: cssClasses,
+            refine: refine,
+            min: minRange,
+            max: maxRange,
+            values: values,
+            tooltips: tooltips,
+            step: step,
+            pips: pips
+        }), containerNode);
+    };
+};
+function rangeSlider(widgetParams) {
+    var _ref3 = widgetParams || {}, container = _ref3.container, attribute = _ref3.attribute, min = _ref3.min, max = _ref3.max, _ref3$cssClasses = _ref3.cssClasses, userCssClasses = _ref3$cssClasses === void 0 ? {} : _ref3$cssClasses, step = _ref3.step, _ref3$pips = _ref3.pips, pips = _ref3$pips === void 0 ? true : _ref3$pips, _ref3$precision = _ref3.precision, precision = _ref3$precision === void 0 ? 0 : _ref3$precision, _ref3$tooltips = _ref3.tooltips, tooltips = _ref3$tooltips === void 0 ? true : _ref3$tooltips;
+    if (!container) throw new Error(withUsage('The `container` option is required.'));
+    var containerNode = _utils.getContainerNode(container);
+    var cssClasses = {
+        root: _classnamesDefault.default(suit(), userCssClasses.root),
+        disabledRoot: _classnamesDefault.default(suit({
+            modifierName: 'disabled'
+        }), userCssClasses.disabledRoot)
+    };
+    var specializedRenderer = renderer({
+        containerNode: containerNode,
+        step: step,
+        pips: pips,
+        tooltips: tooltips,
+        renderState: {},
+        cssClasses: cssClasses
+    });
+    var makeWidget = _connectRangeDefault.default(specializedRenderer, function() {
+        return _preact.render(null, containerNode);
+    });
+    return _objectSpread(_objectSpread({}, makeWidget({
+        attribute: attribute,
+        min: min,
+        max: max,
+        precision: precision
+    })), {}, {
+        $$type: 'ais.rangeSlider',
+        $$widgetType: 'ais.rangeSlider'
+    });
+}
+exports.default = rangeSlider;
+
+},{"preact":"26zcy","classnames":"jocGM","../../components/Slider/Slider":"7BJD7","../../connectors/range/connectRange":"abXn7","../../lib/utils":"etVYs","../../lib/suit":"du81D","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"7BJD7":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+/** @jsx h */ var _preact = require("preact");
+var _rheostat = require("./Rheostat");
+var _rheostatDefault = parcelHelpers.interopDefault(_rheostat);
+var _classnames = require("classnames");
+var _classnamesDefault = parcelHelpers.interopDefault(_classnames);
+var _utils = require("../../lib/utils");
+var _pit = require("./Pit");
+var _pitDefault = parcelHelpers.interopDefault(_pit);
+function _typeof(obj1) {
+    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") _typeof = function _typeof(obj) {
+        return typeof obj;
+    };
+    else _typeof = function _typeof(obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+    };
+    return _typeof(obj1);
+}
+function _toConsumableArray(arr) {
+    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
+}
+function _nonIterableSpread() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+}
+function _iterableToArray(iter) {
+    if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
+}
+function _arrayWithoutHoles(arr) {
+    if (Array.isArray(arr)) return _arrayLikeToArray(arr);
+}
+function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+    for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
+    return arr2;
+}
+function _extends() {
+    _extends = Object.assign || function(target) {
+        for(var i = 1; i < arguments.length; i++){
+            var source = arguments[i];
+            for(var key in source)if (Object.prototype.hasOwnProperty.call(source, key)) target[key] = source[key];
+        }
+        return target;
+    };
+    return _extends.apply(this, arguments);
+}
+function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
+}
+function _defineProperties(target, props) {
+    for(var i = 0; i < props.length; i++){
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+    }
+}
+function _createClass(Constructor, protoProps, staticProps) {
+    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) _defineProperties(Constructor, staticProps);
+    return Constructor;
+}
+function _inherits(subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) throw new TypeError("Super expression must either be null or a function");
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+        constructor: {
+            value: subClass,
+            writable: true,
+            configurable: true
+        }
+    });
+    if (superClass) _setPrototypeOf(subClass, superClass);
+}
+function _setPrototypeOf(o1, p1) {
+    _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+        o.__proto__ = p;
+        return o;
+    };
+    return _setPrototypeOf(o1, p1);
+}
+function _createSuper(Derived) {
+    var hasNativeReflectConstruct = _isNativeReflectConstruct();
+    return function _createSuperInternal() {
+        var Super = _getPrototypeOf(Derived), result;
+        if (hasNativeReflectConstruct) {
+            var NewTarget = _getPrototypeOf(this).constructor;
+            result = Reflect.construct(Super, arguments, NewTarget);
+        } else result = Super.apply(this, arguments);
+        return _possibleConstructorReturn(this, result);
+    };
+}
+function _possibleConstructorReturn(self, call) {
+    if (call && (_typeof(call) === "object" || typeof call === "function")) return call;
+    return _assertThisInitialized(self);
+}
+function _assertThisInitialized(self) {
+    if (self === void 0) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    return self;
+}
+function _isNativeReflectConstruct() {
+    if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+    if (Reflect.construct.sham) return false;
+    if (typeof Proxy === "function") return true;
+    try {
+        Date.prototype.toString.call(Reflect.construct(Date, [], function() {}));
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+function _getPrototypeOf(o2) {
+    _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
+        return o.__proto__ || Object.getPrototypeOf(o);
+    };
+    return _getPrototypeOf(o2);
+}
+function _defineProperty(obj, key, value) {
+    if (key in obj) Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+    });
+    else obj[key] = value;
+    return obj;
+}
+var Slider = /*#__PURE__*/ function(_Component) {
+    _inherits(Slider1, _Component);
+    var _super = _createSuper(Slider1);
+    function Slider1() {
+        var _this;
+        _classCallCheck(this, Slider1);
+        for(var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++)args[_key] = arguments[_key];
+        _this = _super.call.apply(_super, [
+            this
+        ].concat(args));
+        _defineProperty(_assertThisInitialized(_this), "handleChange", function(_ref) {
+            var values = _ref.values;
+            if (!_this.isDisabled) _this.props.refine(values);
+        });
+        _defineProperty(_assertThisInitialized(_this), "createHandleComponent", function(tooltips) {
+            return function(props) {
+                // display only two decimals after comma,
+                // and apply `tooltips.format()` if any
+                var roundedValue = Math.round(parseFloat(props['aria-valuenow']) * 100) / 100;
+                var value = tooltips && tooltips.format ? tooltips.format(roundedValue) : roundedValue;
+                var className = _classnamesDefault.default(props.className, {
+                    'rheostat-handle-lower': props['data-handle-key'] === 0,
+                    'rheostat-handle-upper': props['data-handle-key'] === 1
+                });
+                return _preact.h("div", _extends({}, props, {
+                    className: className
+                }), tooltips && _preact.h("div", {
+                    className: "rheostat-tooltip"
+                }, value));
+            };
+        });
+        return _this;
+    }
+    _createClass(Slider1, [
+        {
+            key: "isDisabled",
+            get: function get() {
+                return this.props.min >= this.props.max;
+            }
+        },
+        {
+            key: "computeDefaultPitPoints",
+            value: function computeDefaultPitPoints(_ref2) {
+                var min = _ref2.min, max = _ref2.max;
+                var totalLength = max - min;
+                var steps = 34;
+                var stepsLength = totalLength / steps;
+                var pitPoints = [
+                    min
+                ].concat(_toConsumableArray(_utils.range({
+                    end: steps - 1
+                }).map(function(step) {
+                    return min + stepsLength * (step + 1);
+                })), [
+                    max
+                ]);
+                return pitPoints;
+            } // creates an array of values where the slider should snap to
+        },
+        {
+            key: "computeSnapPoints",
+            value: function computeSnapPoints(_ref3) {
+                var min = _ref3.min, max = _ref3.max, step = _ref3.step;
+                if (!step) return undefined;
+                return [].concat(_toConsumableArray(_utils.range({
+                    start: min,
+                    end: max,
+                    step: step
+                })), [
+                    max
+                ]);
+            }
+        },
+        {
+            key: "render",
+            value: function render() {
+                var _this$props = this.props, tooltips = _this$props.tooltips, step = _this$props.step, pips = _this$props.pips, values = _this$props.values, cssClasses = _this$props.cssClasses;
+                var _ref4 = this.isDisabled ? {
+                    min: this.props.min,
+                    max: this.props.max + 0.001
+                } : this.props, min = _ref4.min, max = _ref4.max;
+                var snapPoints = this.computeSnapPoints({
+                    min: min,
+                    max: max,
+                    step: step
+                });
+                var pitPoints = pips === false ? [] : this.computeDefaultPitPoints({
+                    min: min,
+                    max: max
+                });
+                return _preact.h("div", {
+                    className: _classnamesDefault.default(cssClasses.root, _defineProperty({}, cssClasses.disabledRoot, this.isDisabled))
+                }, _preact.h(_rheostatDefault.default, {
+                    handle: this.createHandleComponent(tooltips),
+                    onChange: this.handleChange,
+                    min: min,
+                    max: max,
+                    pitComponent: _pitDefault.default,
+                    pitPoints: pitPoints,
+                    snap: true,
+                    snapPoints: snapPoints,
+                    values: this.isDisabled ? [
+                        min,
+                        max
+                    ] : values,
+                    disabled: this.isDisabled
+                }));
+            }
+        }
+    ]);
+    return Slider1;
+}(_preact.Component);
+exports.default = Slider;
+
+},{"preact":"26zcy","./Rheostat":"1ASZX","classnames":"jocGM","../../lib/utils":"etVYs","./Pit":"6Dz8C","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"1ASZX":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+/**
+ * This is a fork of Rheostat for Preact X.
+ *
+ * @see https://github.com/airbnb/rheostat
+ */ /** @jsx h */ var _preact = require("preact");
+function _typeof(obj1) {
+    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") _typeof = function _typeof(obj) {
+        return typeof obj;
+    };
+    else _typeof = function _typeof(obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+    };
+    return _typeof(obj1);
+}
+function _defineProperty(obj, key, value) {
+    if (key in obj) Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+    });
+    else obj[key] = value;
+    return obj;
+}
+function _extends() {
+    _extends = Object.assign || function(target) {
+        for(var i = 1; i < arguments.length; i++){
+            var source = arguments[i];
+            for(var key in source)if (Object.prototype.hasOwnProperty.call(source, key)) target[key] = source[key];
+        }
+        return target;
+    };
+    return _extends.apply(this, arguments);
+}
+function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
+}
+function _defineProperties(target, props) {
+    for(var i = 0; i < props.length; i++){
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+    }
+}
+function _createClass(Constructor, protoProps, staticProps) {
+    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) _defineProperties(Constructor, staticProps);
+    return Constructor;
+}
+function _inherits(subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) throw new TypeError("Super expression must either be null or a function");
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+        constructor: {
+            value: subClass,
+            writable: true,
+            configurable: true
+        }
+    });
+    if (superClass) _setPrototypeOf(subClass, superClass);
+}
+function _setPrototypeOf(o1, p1) {
+    _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+        o.__proto__ = p;
+        return o;
+    };
+    return _setPrototypeOf(o1, p1);
+}
+function _createSuper(Derived) {
+    var hasNativeReflectConstruct = _isNativeReflectConstruct();
+    return function _createSuperInternal() {
+        var Super = _getPrototypeOf(Derived), result;
+        if (hasNativeReflectConstruct) {
+            var NewTarget = _getPrototypeOf(this).constructor;
+            result = Reflect.construct(Super, arguments, NewTarget);
+        } else result = Super.apply(this, arguments);
+        return _possibleConstructorReturn(this, result);
+    };
+}
+function _possibleConstructorReturn(self, call) {
+    if (call && (_typeof(call) === "object" || typeof call === "function")) return call;
+    return _assertThisInitialized(self);
+}
+function _assertThisInitialized(self) {
+    if (self === void 0) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    return self;
+}
+function _isNativeReflectConstruct() {
+    if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+    if (Reflect.construct.sham) return false;
+    if (typeof Proxy === "function") return true;
+    try {
+        Date.prototype.toString.call(Reflect.construct(Date, [], function() {}));
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+function _getPrototypeOf(o2) {
+    _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
+        return o.__proto__ || Object.getPrototypeOf(o);
+    };
+    return _getPrototypeOf(o2);
+}
+var KEYS = {
+    DOWN: 40,
+    END: 35,
+    ESC: 27,
+    HOME: 36,
+    LEFT: 37,
+    PAGE_DOWN: 34,
+    PAGE_UP: 33,
+    RIGHT: 39,
+    UP: 38
+};
+var PERCENT_EMPTY = 0;
+var PERCENT_FULL = 100;
+function getPosition(value, min, max) {
+    return (value - min) / (max - min) * 100;
+}
+function getValue(pos, min, max) {
+    var decimal = pos / 100;
+    if (pos === 0) return min;
+    else if (pos === 100) return max;
+    return Math.round((max - min) * decimal + min);
+}
+function getClassName(props) {
+    var orientation = props.orientation === 'vertical' ? 'rheostat-vertical' : 'rheostat-horizontal';
+    return [
+        'rheostat',
+        orientation
+    ].concat(props.className.split(' ')).join(' ');
+}
+function getHandleFor(ev) {
+    return Number(ev.currentTarget.getAttribute('data-handle-key'));
+}
+function killEvent(ev) {
+    ev.stopPropagation();
+    ev.preventDefault();
+}
+var Button = /*#__PURE__*/ function(_Component) {
+    _inherits(Button1, _Component);
+    var _super = _createSuper(Button1);
+    function Button1() {
+        _classCallCheck(this, Button1);
+        return _super.apply(this, arguments);
+    }
+    _createClass(Button1, [
+        {
+            key: "render",
+            value: function render() {
+                return _preact.h("button", _extends({}, this.props, {
+                    type: "button"
+                }));
+            }
+        }
+    ]);
+    return Button1;
+}(_preact.Component);
+var _ref2 = _preact.h("div", {
+    className: "rheostat-background"
+});
+var Rheostat = /*#__PURE__*/ function(_Component2) {
+    _inherits(Rheostat1, _Component2);
+    var _super2 = _createSuper(Rheostat1);
+    function Rheostat1(props) {
+        var _this;
+        _classCallCheck(this, Rheostat1);
+        _this = _super2.call(this, props);
+        _defineProperty(_assertThisInitialized(_this), "state", {
+            className: getClassName(_this.props),
+            handlePos: _this.props.values.map(function(value) {
+                return getPosition(value, _this.props.min, _this.props.max);
+            }),
+            handleDimensions: 0,
+            mousePos: null,
+            sliderBox: {},
+            slidingIndex: null,
+            values: _this.props.values
+        });
+        _this.getPublicState = _this.getPublicState.bind(_assertThisInitialized(_this));
+        _this.getSliderBoundingBox = _this.getSliderBoundingBox.bind(_assertThisInitialized(_this));
+        _this.getProgressStyle = _this.getProgressStyle.bind(_assertThisInitialized(_this));
+        _this.getMinValue = _this.getMinValue.bind(_assertThisInitialized(_this));
+        _this.getMaxValue = _this.getMaxValue.bind(_assertThisInitialized(_this));
+        _this.getHandleDimensions = _this.getHandleDimensions.bind(_assertThisInitialized(_this));
+        _this.getClosestSnapPoint = _this.getClosestSnapPoint.bind(_assertThisInitialized(_this));
+        _this.getSnapPosition = _this.getSnapPosition.bind(_assertThisInitialized(_this));
+        _this.getNextPositionForKey = _this.getNextPositionForKey.bind(_assertThisInitialized(_this));
+        _this.getNextState = _this.getNextState.bind(_assertThisInitialized(_this));
+        _this.handleClick = _this.handleClick.bind(_assertThisInitialized(_this));
+        _this.getClosestHandle = _this.getClosestHandle.bind(_assertThisInitialized(_this));
+        _this.setStartSlide = _this.setStartSlide.bind(_assertThisInitialized(_this));
+        _this.startMouseSlide = _this.startMouseSlide.bind(_assertThisInitialized(_this));
+        _this.startTouchSlide = _this.startTouchSlide.bind(_assertThisInitialized(_this));
+        _this.handleMouseSlide = _this.handleMouseSlide.bind(_assertThisInitialized(_this));
+        _this.handleTouchSlide = _this.handleTouchSlide.bind(_assertThisInitialized(_this));
+        _this.handleSlide = _this.handleSlide.bind(_assertThisInitialized(_this));
+        _this.endSlide = _this.endSlide.bind(_assertThisInitialized(_this));
+        _this.handleKeydown = _this.handleKeydown.bind(_assertThisInitialized(_this));
+        _this.validatePosition = _this.validatePosition.bind(_assertThisInitialized(_this));
+        _this.validateValues = _this.validateValues.bind(_assertThisInitialized(_this));
+        _this.canMove = _this.canMove.bind(_assertThisInitialized(_this));
+        _this.fireChangeEvent = _this.fireChangeEvent.bind(_assertThisInitialized(_this));
+        _this.slideTo = _this.slideTo.bind(_assertThisInitialized(_this));
+        _this.updateNewValues = _this.updateNewValues.bind(_assertThisInitialized(_this));
+        return _this;
+    }
+    _createClass(Rheostat1, [
+        {
+            key: "componentWillReceiveProps",
+            value: function componentWillReceiveProps(nextProps) {
+                var _this$props = this.props, className = _this$props.className, disabled = _this$props.disabled, min = _this$props.min, max = _this$props.max, orientation = _this$props.orientation;
+                var _this$state = this.state, values = _this$state.values, slidingIndex = _this$state.slidingIndex;
+                var minMaxChanged = nextProps.min !== min || nextProps.max !== max;
+                var valuesChanged = values.length !== nextProps.values.length || values.some(function(value, idx) {
+                    return nextProps.values[idx] !== value;
+                });
+                var orientationChanged = nextProps.className !== className || nextProps.orientation !== orientation;
+                var willBeDisabled = nextProps.disabled && !disabled;
+                if (orientationChanged) this.setState({
+                    className: getClassName(nextProps)
+                });
+                if (minMaxChanged || valuesChanged) this.updateNewValues(nextProps);
+                if (willBeDisabled && slidingIndex !== null) this.endSlide();
+            }
+        },
+        {
+            key: "getPublicState",
+            value: function getPublicState() {
+                var _this$props2 = this.props, min = _this$props2.min, max = _this$props2.max;
+                var values = this.state.values;
+                return {
+                    max: max,
+                    min: min,
+                    values: values
+                };
+            }
+        },
+        {
+            key: "getSliderBoundingBox",
+            value: function getSliderBoundingBox() {
+                var node = this.rheostat.getDOMNode ? this.rheostat.getDOMNode() : this.rheostat;
+                var rect = node.getBoundingClientRect();
+                return {
+                    height: rect.height || node.clientHeight,
+                    left: rect.left,
+                    top: rect.top,
+                    width: rect.width || node.clientWidth
+                };
+            }
+        },
+        {
+            key: "getProgressStyle",
+            value: function getProgressStyle(idx) {
+                var handlePos = this.state.handlePos;
+                var value = handlePos[idx];
+                if (idx === 0) return this.props.orientation === 'vertical' ? {
+                    height: "".concat(value, "%"),
+                    top: 0
+                } : {
+                    left: 0,
+                    width: "".concat(value, "%")
+                };
+                var prevValue = handlePos[idx - 1];
+                var diffValue = value - prevValue;
+                return this.props.orientation === 'vertical' ? {
+                    height: "".concat(diffValue, "%"),
+                    top: "".concat(prevValue, "%")
+                } : {
+                    left: "".concat(prevValue, "%"),
+                    width: "".concat(diffValue, "%")
+                };
+            }
+        },
+        {
+            key: "getMinValue",
+            value: function getMinValue(idx) {
+                return this.state.values[idx - 1] ? Math.max(this.props.min, this.state.values[idx - 1]) : this.props.min;
+            }
+        },
+        {
+            key: "getMaxValue",
+            value: function getMaxValue(idx) {
+                return this.state.values[idx + 1] ? Math.min(this.props.max, this.state.values[idx + 1]) : this.props.max;
+            }
+        },
+        {
+            key: "getHandleDimensions",
+            value: function getHandleDimensions(ev, sliderBox) {
+                var handleNode = ev.currentTarget || null;
+                if (!handleNode) return 0;
+                return this.props.orientation === 'vertical' ? handleNode.clientHeight / sliderBox.height * PERCENT_FULL / 2 : handleNode.clientWidth / sliderBox.width * PERCENT_FULL / 2;
+            }
+        },
+        {
+            key: "getClosestSnapPoint",
+            value: function getClosestSnapPoint(value) {
+                if (!this.props.snapPoints.length) return value;
+                return this.props.snapPoints.reduce(function(snapTo, snap) {
+                    return Math.abs(snapTo - value) < Math.abs(snap - value) ? snapTo : snap;
+                });
+            }
+        },
+        {
+            key: "getSnapPosition",
+            value: function getSnapPosition(positionPercent) {
+                if (!this.props.snap) return positionPercent;
+                var _this$props3 = this.props, max = _this$props3.max, min = _this$props3.min;
+                var value = getValue(positionPercent, min, max);
+                var snapValue = this.getClosestSnapPoint(value);
+                return getPosition(snapValue, min, max);
+            }
+        },
+        {
+            key: "getNextPositionForKey",
+            value: function getNextPositionForKey(idx, keyCode) {
+                var _stepMultiplier;
+                var _this$state2 = this.state, handlePos = _this$state2.handlePos, values = _this$state2.values;
+                var _this$props4 = this.props, max = _this$props4.max, min = _this$props4.min, snapPoints = _this$props4.snapPoints;
+                var shouldSnap = this.props.snap;
+                var proposedValue = values[idx];
+                var proposedPercentage = handlePos[idx];
+                var originalPercentage = proposedPercentage;
+                var stepValue = 1;
+                if (max >= 100) proposedPercentage = Math.round(proposedPercentage);
+                else stepValue = 100 / (max - min);
+                var currentIndex = null;
+                if (shouldSnap) currentIndex = snapPoints.indexOf(this.getClosestSnapPoint(values[idx]));
+                var stepMultiplier = (_stepMultiplier = {}, _defineProperty(_stepMultiplier, KEYS.LEFT, function(v) {
+                    return v * -1;
+                }), _defineProperty(_stepMultiplier, KEYS.RIGHT, function(v) {
+                    return v;
+                }), _defineProperty(_stepMultiplier, KEYS.UP, function(v) {
+                    return v;
+                }), _defineProperty(_stepMultiplier, KEYS.DOWN, function(v) {
+                    return v * -1;
+                }), _defineProperty(_stepMultiplier, KEYS.PAGE_DOWN, function(v) {
+                    return v > 1 ? -v : v * -10;
+                }), _defineProperty(_stepMultiplier, KEYS.PAGE_UP, function(v) {
+                    return v > 1 ? v : v * 10;
+                }), _stepMultiplier);
+                if (Object.prototype.hasOwnProperty.call(stepMultiplier, keyCode)) {
+                    proposedPercentage += stepMultiplier[keyCode](stepValue);
+                    if (shouldSnap) {
+                        if (proposedPercentage > originalPercentage) // move cursor right unless overflow
+                        {
+                            if (currentIndex < snapPoints.length - 1) proposedValue = snapPoints[currentIndex + 1];
+                             // move cursor left unless there is overflow
+                        } else if (currentIndex > 0) proposedValue = snapPoints[currentIndex - 1];
+                    }
+                } else if (keyCode === KEYS.HOME) {
+                    proposedPercentage = PERCENT_EMPTY;
+                    if (shouldSnap) proposedValue = snapPoints[0];
+                } else if (keyCode === KEYS.END) {
+                    proposedPercentage = PERCENT_FULL;
+                    if (shouldSnap) proposedValue = snapPoints[snapPoints.length - 1];
+                } else return null;
+                return shouldSnap ? getPosition(proposedValue, min, max) : proposedPercentage;
+            }
+        },
+        {
+            key: "getNextState",
+            value: function getNextState(idx, proposedPosition) {
+                var handlePos = this.state.handlePos;
+                var _this$props5 = this.props, max = _this$props5.max, min = _this$props5.min;
+                var actualPosition = this.validatePosition(idx, proposedPosition);
+                var nextHandlePos = handlePos.map(function(pos, index) {
+                    return index === idx ? actualPosition : pos;
+                });
+                return {
+                    handlePos: nextHandlePos,
+                    values: nextHandlePos.map(function(pos) {
+                        return getValue(pos, min, max);
+                    })
+                };
+            }
+        },
+        {
+            key: "getClosestHandle",
+            value: function getClosestHandle(positionPercent) {
+                var handlePos = this.state.handlePos;
+                return handlePos.reduce(function(closestIdx, node, idx) {
+                    var challenger = Math.abs(handlePos[idx] - positionPercent);
+                    var current = Math.abs(handlePos[closestIdx] - positionPercent);
+                    return challenger < current ? idx : closestIdx;
+                }, 0);
+            }
+        },
+        {
+            key: "setStartSlide",
+            value: function setStartSlide(ev, x, y) {
+                var sliderBox = this.getSliderBoundingBox();
+                this.setState({
+                    handleDimensions: this.getHandleDimensions(ev, sliderBox),
+                    mousePos: {
+                        x: x,
+                        y: y
+                    },
+                    sliderBox: sliderBox,
+                    slidingIndex: getHandleFor(ev)
+                });
+            }
+        },
+        {
+            key: "startMouseSlide",
+            value: function startMouseSlide(ev) {
+                this.setStartSlide(ev, ev.clientX, ev.clientY);
+                if (typeof document.addEventListener === 'function') {
+                    document.addEventListener('mousemove', this.handleMouseSlide, false);
+                    document.addEventListener('mouseup', this.endSlide, false);
+                } else {
+                    document.attachEvent('onmousemove', this.handleMouseSlide);
+                    document.attachEvent('onmouseup', this.endSlide);
+                }
+                killEvent(ev);
+            }
+        },
+        {
+            key: "startTouchSlide",
+            value: function startTouchSlide(ev) {
+                if (ev.changedTouches.length > 1) return;
+                var touch = ev.changedTouches[0];
+                this.setStartSlide(ev, touch.clientX, touch.clientY);
+                document.addEventListener('touchmove', this.handleTouchSlide, false);
+                document.addEventListener('touchend', this.endSlide, false);
+                if (this.props.onSliderDragStart) this.props.onSliderDragStart();
+                killEvent(ev);
+            }
+        },
+        {
+            key: "handleMouseSlide",
+            value: function handleMouseSlide(ev) {
+                if (this.state.slidingIndex === null) return;
+                this.handleSlide(ev.clientX, ev.clientY);
+                killEvent(ev);
+            }
+        },
+        {
+            key: "handleTouchSlide",
+            value: function handleTouchSlide(ev) {
+                if (this.state.slidingIndex === null) return;
+                if (ev.changedTouches.length > 1) {
+                    this.endSlide();
+                    return;
+                }
+                var touch = ev.changedTouches[0];
+                this.handleSlide(touch.clientX, touch.clientY);
+                killEvent(ev);
+            }
+        },
+        {
+            key: "handleSlide",
+            value: function handleSlide(x, y) {
+                var _this$state3 = this.state, idx = _this$state3.slidingIndex, sliderBox = _this$state3.sliderBox;
+                var positionPercent = this.props.orientation === 'vertical' ? (y - sliderBox.top) / sliderBox.height * PERCENT_FULL : (x - sliderBox.left) / sliderBox.width * PERCENT_FULL;
+                this.slideTo(idx, positionPercent);
+                if (this.canMove(idx, positionPercent)) {
+                    // update mouse positions
+                    this.setState({
+                        x: x,
+                        y: y
+                    });
+                    if (this.props.onSliderDragMove) this.props.onSliderDragMove();
+                }
+            }
+        },
+        {
+            key: "endSlide",
+            value: function endSlide() {
+                var _this2 = this;
+                var idx = this.state.slidingIndex;
+                this.setState({
+                    slidingIndex: null
+                });
+                if (typeof document.removeEventListener === 'function') {
+                    document.removeEventListener('mouseup', this.endSlide, false);
+                    document.removeEventListener('touchend', this.endSlide, false);
+                    document.removeEventListener('touchmove', this.handleTouchSlide, false);
+                    document.removeEventListener('mousemove', this.handleMouseSlide, false);
+                } else {
+                    document.detachEvent('onmousemove', this.handleMouseSlide);
+                    document.detachEvent('onmouseup', this.endSlide);
+                }
+                if (this.props.onSliderDragEnd) this.props.onSliderDragEnd();
+                if (this.props.snap) {
+                    var positionPercent = this.getSnapPosition(this.state.handlePos[idx]);
+                    this.slideTo(idx, positionPercent, function() {
+                        return _this2.fireChangeEvent();
+                    });
+                } else this.fireChangeEvent();
+            }
+        },
+        {
+            key: "handleClick",
+            value: function handleClick(ev) {
+                var _this3 = this;
+                if (ev.target.getAttribute('data-handle-key')) return;
+                 // Calculate the position of the slider on the page so we can determine
+                // the position where you click in relativity.
+                var sliderBox = this.getSliderBoundingBox();
+                var positionDecimal = this.props.orientation === 'vertical' ? (ev.clientY - sliderBox.top) / sliderBox.height : (ev.clientX - sliderBox.left) / sliderBox.width;
+                var positionPercent = positionDecimal * PERCENT_FULL;
+                var handleId = this.getClosestHandle(positionPercent);
+                var validPositionPercent = this.getSnapPosition(positionPercent); // Move the handle there
+                this.slideTo(handleId, validPositionPercent, function() {
+                    return _this3.fireChangeEvent();
+                });
+                if (this.props.onClick) this.props.onClick();
+            }
+        },
+        {
+            key: "handleKeydown",
+            value: function handleKeydown(ev) {
+                var _this4 = this;
+                var idx = getHandleFor(ev);
+                if (ev.keyCode === KEYS.ESC) {
+                    ev.currentTarget.blur();
+                    return;
+                }
+                var proposedPercentage = this.getNextPositionForKey(idx, ev.keyCode);
+                if (proposedPercentage === null) return;
+                if (this.canMove(idx, proposedPercentage)) {
+                    this.slideTo(idx, proposedPercentage, function() {
+                        return _this4.fireChangeEvent();
+                    });
+                    if (this.props.onKeyPress) this.props.onKeyPress();
+                }
+                killEvent(ev);
+            } // Make sure the proposed position respects the bounds and
+        },
+        {
+            key: "validatePosition",
+            value: function validatePosition(idx, proposedPosition) {
+                var _this$state4 = this.state, handlePos = _this$state4.handlePos, handleDimensions = _this$state4.handleDimensions;
+                return Math.max(Math.min(proposedPosition, handlePos[idx + 1] !== undefined ? handlePos[idx + 1] - handleDimensions : PERCENT_FULL // 100% is the highest value
+                ), handlePos[idx - 1] !== undefined ? handlePos[idx - 1] + handleDimensions : PERCENT_EMPTY // 0% is the lowest value
+                );
+            }
+        },
+        {
+            key: "validateValues",
+            value: function validateValues(proposedValues, props) {
+                var _ref = props || this.props, max = _ref.max, min = _ref.min;
+                return proposedValues.map(function(value, idx, values) {
+                    var realValue = Math.max(Math.min(value, max), min);
+                    if (values.length && realValue < values[idx - 1]) return values[idx - 1];
+                    return realValue;
+                });
+            }
+        },
+        {
+            key: "canMove",
+            value: function canMove(idx, proposedPosition) {
+                var _this$state5 = this.state, handlePos = _this$state5.handlePos, handleDimensions = _this$state5.handleDimensions;
+                if (proposedPosition < PERCENT_EMPTY) return false;
+                if (proposedPosition > PERCENT_FULL) return false;
+                var nextHandlePosition = handlePos[idx + 1] !== undefined ? handlePos[idx + 1] - handleDimensions : Infinity;
+                if (proposedPosition > nextHandlePosition) return false;
+                var prevHandlePosition = handlePos[idx - 1] !== undefined ? handlePos[idx - 1] + handleDimensions : -Infinity;
+                if (proposedPosition < prevHandlePosition) return false;
+                return true;
+            }
+        },
+        {
+            key: "fireChangeEvent",
+            value: function fireChangeEvent() {
+                var onChange = this.props.onChange;
+                if (onChange) onChange(this.getPublicState());
+            }
+        },
+        {
+            key: "slideTo",
+            value: function slideTo(idx, proposedPosition, onAfterSet) {
+                var _this5 = this;
+                var nextState = this.getNextState(idx, proposedPosition);
+                this.setState(nextState, function() {
+                    var onValuesUpdated = _this5.props.onValuesUpdated;
+                    if (onValuesUpdated) onValuesUpdated(_this5.getPublicState());
+                    if (onAfterSet) onAfterSet();
+                });
+            }
+        },
+        {
+            key: "updateNewValues",
+            value: function updateNewValues(nextProps) {
+                var _this6 = this;
+                var slidingIndex = this.state.slidingIndex; // Don't update while the slider is sliding
+                if (slidingIndex !== null) return;
+                var max = nextProps.max, min = nextProps.min, values = nextProps.values;
+                var nextValues = this.validateValues(values, nextProps);
+                this.setState({
+                    handlePos: nextValues.map(function(value) {
+                        return getPosition(value, min, max);
+                    }),
+                    values: nextValues
+                }, function() {
+                    return _this6.fireChangeEvent();
+                });
+            }
+        },
+        {
+            key: "render",
+            value: function render() {
+                var _this7 = this;
+                var _this$props6 = this.props, children = _this$props6.children, disabled = _this$props6.disabled, Handle = _this$props6.handle, max = _this$props6.max, min = _this$props6.min, orientation = _this$props6.orientation, PitComponent = _this$props6.pitComponent, pitPoints = _this$props6.pitPoints, ProgressBar = _this$props6.progressBar;
+                var _this$state6 = this.state, className = _this$state6.className, handlePos = _this$state6.handlePos, values = _this$state6.values;
+                return _preact.h("div", {
+                    className: className,
+                    ref: function ref(_ref3) {
+                        _this7.rheostat = _ref3;
+                    },
+                    onClick: !disabled && this.handleClick,
+                    style: {
+                        position: 'relative'
+                    }
+                }, _ref2, handlePos.map(function(pos, idx) {
+                    var handleStyle = orientation === 'vertical' ? {
+                        top: "".concat(pos, "%"),
+                        position: 'absolute'
+                    } : {
+                        left: "".concat(pos, "%"),
+                        position: 'absolute'
+                    };
+                    return _preact.h(Handle, {
+                        "aria-valuemax": _this7.getMaxValue(idx),
+                        "aria-valuemin": _this7.getMinValue(idx),
+                        "aria-valuenow": values[idx],
+                        "aria-disabled": disabled,
+                        "data-handle-key": idx,
+                        className: "rheostat-handle",
+                        key: "handle-".concat(idx),
+                        onClick: _this7.killEvent,
+                        onKeyDown: !disabled && _this7.handleKeydown,
+                        onMouseDown: !disabled && _this7.startMouseSlide,
+                        onTouchStart: !disabled && _this7.startTouchSlide,
+                        role: "slider",
+                        style: handleStyle,
+                        tabIndex: 0
+                    });
+                }), handlePos.map(function(node, idx, arr) {
+                    if (idx === 0 && arr.length > 1) return null;
+                    return _preact.h(ProgressBar, {
+                        className: "rheostat-progress",
+                        key: "progress-bar-".concat(idx),
+                        style: _this7.getProgressStyle(idx)
+                    });
+                }), PitComponent && pitPoints.map(function(n) {
+                    var pos = getPosition(n, min, max);
+                    var pitStyle = orientation === 'vertical' ? {
+                        top: "".concat(pos, "%"),
+                        position: 'absolute'
+                    } : {
+                        left: "".concat(pos, "%"),
+                        position: 'absolute'
+                    };
+                    return _preact.h(PitComponent, {
+                        key: "pit-".concat(n),
+                        style: pitStyle
+                    }, n);
+                }), children);
+            }
+        }
+    ]);
+    return Rheostat1;
+}(_preact.Component);
+_defineProperty(Rheostat, "defaultProps", {
+    className: '',
+    children: null,
+    disabled: false,
+    handle: Button,
+    max: PERCENT_FULL,
+    min: PERCENT_EMPTY,
+    onClick: null,
+    onChange: null,
+    onKeyPress: null,
+    onSliderDragEnd: null,
+    onSliderDragMove: null,
+    onSliderDragStart: null,
+    onValuesUpdated: null,
+    orientation: 'horizontal',
+    pitComponent: null,
+    pitPoints: [],
+    progressBar: 'div',
+    snap: false,
+    snapPoints: [],
+    values: [
+        PERCENT_EMPTY
+    ]
+});
+exports.default = Rheostat;
+
+},{"preact":"26zcy","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6Dz8C":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+/** @jsx h */ var _preact = require("preact");
+var _classnames = require("classnames");
+var _classnamesDefault = parcelHelpers.interopDefault(_classnames);
+function ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+    if (Object.getOwnPropertySymbols) {
+        var symbols = Object.getOwnPropertySymbols(object);
+        if (enumerableOnly) symbols = symbols.filter(function(sym) {
+            return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+        });
+        keys.push.apply(keys, symbols);
+    }
+    return keys;
+}
+function _objectSpread(target) {
+    for(var i = 1; i < arguments.length; i++){
+        var source = arguments[i] != null ? arguments[i] : {};
+        if (i % 2) ownKeys(Object(source), true).forEach(function(key) {
+            _defineProperty(target, key, source[key]);
+        });
+        else if (Object.getOwnPropertyDescriptors) Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+        else ownKeys(Object(source)).forEach(function(key) {
+            Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
+    }
+    return target;
+}
+function _defineProperty(obj, key, value) {
+    if (key in obj) Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+    });
+    else obj[key] = value;
+    return obj;
+}
+var Pit = function Pit(_ref) {
+    var style = _ref.style, children = _ref.children;
+    // first, end & middle
+    var positionValue = Math.round(parseFloat(style.left));
+    var shouldDisplayValue = [
+        0,
+        50,
+        100
+    ].includes(positionValue); // Children could be an array, unwrap the value if it's the case
+    // see: https://github.com/developit/preact-compat/issues/436
+    var value = Array.isArray(children) ? children[0] : children;
+    var pitValue = Math.round(parseInt(value, 10) * 100) / 100;
+    return _preact.h("div", {
+        style: _objectSpread(_objectSpread({}, style), {}, {
+            marginLeft: positionValue === 100 ? '-2px' : 0
+        }),
+        className: _classnamesDefault.default('rheostat-marker', 'rheostat-marker-horizontal', {
+            'rheostat-marker-large': shouldDisplayValue
+        })
+    }, shouldDisplayValue && _preact.h("div", {
+        className: 'rheostat-value'
+    }, pitValue));
+};
+exports.default = Pit;
+
+},{"preact":"26zcy","classnames":"jocGM","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"2sKTT":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 /** @jsx h */ var _preact = require("preact");

@@ -13,6 +13,7 @@ import {
   hits,
   pagination,
   sortBy,
+  rangeSlider
 } from 'instantsearch.js/es/widgets';
 
 import '@algolia/autocomplete-theme-classic'
@@ -34,14 +35,13 @@ const search = instantsearch({
 const virtualSearchBox = connectSearchBox(() => {})
 
 search.addWidgets([
-  refinementList({
+  rangeSlider({
     container: '#filter-list',
     attribute: 'filelength(s)',
   }),
-  refinementList({
-    container: '#fps-list',
-    attribute: 'fps',
-    showMore: true
+  rangeSlider({
+    container:  '#fps-list',
+    attribute: 'fps'
   }),
   configure({
     hitsPerPage: 16
